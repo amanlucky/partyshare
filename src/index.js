@@ -10,7 +10,9 @@
  *
  * Note that this file is required for the build process.
  */
-
+console.log("ENV TEST:");
+console.log("CLIENT_ID:", process.env.REACT_APP_SHARETRIBE_SDK_CLIENT_ID);
+console.log("MAPBOX:", process.env.REACT_APP_MAPBOX_ACCESS_TOKEN);
 // Dependency libs
 import React from 'react';
 import ReactDOMClient from 'react-dom/client';
