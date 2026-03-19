@@ -1,6 +1,6 @@
 import React from 'react';
 import loadable from '@loadable/component';
-
+import LandingPage from './pages/LandingPage';
 import getPageDataLoadingAPI from '../containers/pageDataLoadingAPI';
 import NotFoundPage from '../containers/NotFoundPage/NotFoundPage';
 import PreviewResolverPage from '../containers/PreviewResolverPage/PreviewResolverPage';
