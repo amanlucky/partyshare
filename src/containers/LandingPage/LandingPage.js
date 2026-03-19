@@ -20,4 +20,14 @@ const LandingPage = () => {
 
 export default LandingPage;
 */
-return <h1>WORKING</h1>;
+import React from "react";
+
+const LandingPage = () => {
+  return (
+    <div style={{ padding: "40px", fontSize: "30px" }}>
+      WORKING 🚀
+    </div>
+  );
+};
+
+export default LandingPage;
