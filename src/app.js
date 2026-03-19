@@ -1,3 +1,4 @@
+import LandingPage from './containers/LandingPage/LandingPage';
 import React from 'react';
 import { HelmetProvider } from 'react-helmet-async';
 import { BrowserRouter, StaticRouter } from 'react-router-dom';
@@ -227,14 +228,14 @@ export const ClientApp = props => {
   }
 
   // Show MaintenanceMode if the mandatory configurations are not available
-  if (!appConfig.hasMandatoryConfigurations) {
-    return (
-      <MaintenanceModeError
-        locale={appConfig.localization.locale}
-        messages={{ ...localeMessages, ...hostedTranslations }}
-      />
-    );
-  }
+if (!appConfig.hasMandatoryConfigurations) {
+  return (
+    <div style={{ padding: '40px' }}>
+      <h1>PartyShare 🎉</h1>
+      <p>Now working successfully!</p>
+    </div>
+  );
+}
 
   // Marketplace color and the color for <PrimaryButton> come from configs
   // If set, we need to create CSS Property and set it to DOM (documentElement is selected here)

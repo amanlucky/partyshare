@@ -1,0 +1,55 @@
+body {
+  margin: 0;
+  font-family: Arial;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  background: black;
+  color: white;
+}
+
+.login-btn {
+  background: white;
+  border: none;
+  padding: 8px 15px;
+}
+
+.hero {
+  text-align: center;
+  padding: 80px;
+  background: #f5f5f5;
+}
+
+.section {
+  padding: 40px;
+}
+
+.grid {
+  display: flex;
+  gap: 20px;
+}
+
+.card {
+  background: #eee;
+  padding: 30px;
+  flex: 1;
+  text-align: center;
+  border-radius: 10px;
+}
+
+.cta {
+  text-align: center;
+  padding: 50px;
+  background: black;
+  color: white;
+}
+
+.footer {
+  text-align: center;
+  padding: 20px;
+  background: #111;
+  color: white;
+}

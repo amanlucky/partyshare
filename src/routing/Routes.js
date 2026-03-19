@@ -1,3 +1,4 @@
+import LandingPage from '../containers/LandingPage/LandingPage';
 import React, { Component } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
@@ -262,12 +263,7 @@ const Routes = (props, context) => {
     );
   };
 
-  return (
-    <Switch>
-      {routeConfiguration.map(toRouteComponent)}
-      <Route component={NotFoundPage} />
-    </Switch>
-  );
+return <LandingPage />;
 };
 
 export default withRouter(Routes);

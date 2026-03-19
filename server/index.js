@@ -317,9 +317,13 @@ app.get('/{*splat}', async (req, res) => {
       }
     })
     .catch(e => {
-      log.error(e, 'server-side-render-failed');
-      res.status(500).send(errorPage500);
-    });
+  console.log('SSR failed → fallback to static HTML', e);
+
+  // fallback to React build (no SSR)
+  res.sendFile(
+    require('path').resolve(__dirname, '../build/index.html')
+  );
+});
 });
 
 // Set error handler. If Sentry is set up, all error responses
