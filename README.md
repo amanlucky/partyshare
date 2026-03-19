@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Sharetribe Web Template
 
 [![CircleCI](https://circleci.com/gh/sharetribe/web-template.svg?style=svg)](https://circleci.com/gh/sharetribe/web-template)
@@ -74,3 +75,6 @@ experience from the [Expert Network](https://www.sharetribe.com/experts/).
 This project is licensed under the terms of the Apache-2.0 license.
 
 See [LICENSE](LICENSE)
+=======
+# partyshare
+>>>>>>> 89d260d9692557a06fc27a2912570eb9e37e6ef8
