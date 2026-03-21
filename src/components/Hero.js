@@ -6,7 +6,7 @@ const Hero = () => {
       <div className="hero-left">
         <h5>THE EVENT RENTAL MARKETPLACE</h5>
         <h1>
-          Everything You Need For <br /> An Event — In One Place
+          LUCKY##Everything You Need For <br /> An Event — In One Place 
         </h1>
         <p>
           Browse tents, décor, furniture, lighting, catering equipment
