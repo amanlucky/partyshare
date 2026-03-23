@@ -1,0 +1,170 @@
+/* BASE */
+.hero {
+  position: relative;
+  background: #f9fafb;
+  padding: 80px 20px;
+  overflow: hidden;
+}
+
+/* Background shape */
+.hero-bg {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  z-index: 0;
+}
+
+/* CONTAINER */
+.hero-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: auto;
+  gap: 40px;
+  position: relative;
+  z-index: 1;
+}
+
+/* LEFT CONTENT */
+.hero-left {
+  flex: 1;
+}
+
+.hero-left h5 {
+  font-size: 14px;
+  color: #3399cd;
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+}
+
+.hero-left h1 {
+  font-size: 56px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 20px;
+}
+
+.hero-left h1 span {
+  font-weight: 400;
+}
+
+.hero-left p {
+  font-size: 16px;
+  color: #6b7280;
+  margin-bottom: 25px;
+  line-height: 1.6;
+}
+
+/* BUTTONS */
+.hero-buttons {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.btn-primary {
+  background: #ff6a00;
+  color: white;
+  border: none;
+  padding: 12px 22px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-outline {
+  border: 1px solid #ddd;
+  background: white;
+  padding: 12px 22px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* RIGHT IMAGE */
+.hero-right {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.hero-right img {
+  width: 100%;
+  max-width: 500px;
+}
+
+/* ========================= */
+/* 📱 MOBILE (≤ 600px) */
+/* ========================= */
+@media (max-width: 600px) {
+  .hero {
+    padding: 50px 15px;
+  }
+
+  .hero-container {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .hero-left h1 {
+    font-size: 32px;
+  }
+
+  .hero-left p {
+    font-size: 14px;
+  }
+
+  .hero-buttons {
+    justify-content: center;
+  }
+
+  .hero-right img {
+    max-width: 280px;
+    margin-top: 20px;
+  }
+
+  .hero-bg {
+    width: 200px;
+  }
+}
+
+/* ========================= */
+/* 📱 TABLET (601px–900px) */
+/* ========================= */
+@media (min-width: 601px) and (max-width: 900px) {
+  .hero {
+    padding: 60px 30px;
+  }
+
+  .hero-container {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .hero-left h1 {
+    font-size: 40px;
+  }
+
+  .hero-right img {
+    max-width: 350px;
+    margin-top: 30px;
+  }
+
+  .hero-bg {
+    width: 250px;
+  }
+}
+
+/* ========================= */
+/* 💻 SMALL LAPTOP (901–1200px) */
+/* ========================= */
+@media (min-width: 901px) and (max-width: 1200px) {
+  .hero-left h1 {
+    font-size: 48px;
+  }
+
+  .hero-right img {
+    max-width: 420px;
+  }
+}

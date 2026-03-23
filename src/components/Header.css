@@ -1,0 +1,126 @@
+/* HEADER CONTAINER */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 40px;
+  background: #fff;
+  border-bottom: 1px solid #eee;
+}
+
+/* LOGO */
+.logo img {
+  height: 40px;
+}
+
+/* SEARCH BAR */
+.search-bar {
+  display: flex;              /* 🔥 this fixes layout */
+  align-items: center;
+  width: 550px;
+  height: 44px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
+
+/* Dropdown */
+.dropdown-wrapper {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.category-dropdown {
+  height: 100%;
+  border: none;
+  outline: none;
+  padding: 0 30px 0 15px;
+  font-size: 14px;
+  background: transparent;
+  appearance: none;
+  border-right: 1px solid #eee;
+  cursor: pointer;
+}
+
+/* Arrow */
+.dropdown-wrapper::after {
+  content: "▾";
+  position: relative;
+  right: 25px;
+  font-size: 12px;
+  color: #666;
+}
+
+/* Input */
+.search-bar input {
+  flex: 1;
+  height: 100%;
+  border: none;
+  outline: none;
+  padding: 0 15px 0 40px; /* space for icon */
+  font-size: 14px;
+}
+.input-wrapper {
+  position: relative;
+  flex: 1;
+  height: 100%;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  color: #9ca3af;
+}
+
+.input-wrapper input {
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  padding: 0 15px 0 35px;
+  font-size: 14px;
+}
+
+/* Fix spacing issue */
+.search-bar input::placeholder {
+  color: #999;
+}
+/* AUTH BUTTONS */
+.auth {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-outline {
+  border: 1px solid #ddd;
+  background: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: #ff6a00;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* TOP BAR */
+.top_bar {
+  text-align: center;
+  background: #0f172a;
+  color: white;
+  padding: 8px;
+  font-size: 14px;
+}
+.search-icon {
+  cursor: pointer;
+}
