@@ -1,9 +1,11 @@
 import React from "react";
-import "./Hero.css";
+import "./hero.css";
 import heroImg from "../assets/hero.png";       // your people image
 import heroBg from "../assets/hero-fbg.png";     // your background shape
 
+
 const Hero = () => {
+  //here i am
   return (
     <section className="hero">
       {/* Background shape */}
