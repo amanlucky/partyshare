@@ -5,6 +5,7 @@ import heroBg from "../assets/hero-fbg.png";     // your background shape
 
 
 const Hero = () => {
+  
   return (
     <section className="hero">
       {/* Background shape */}
