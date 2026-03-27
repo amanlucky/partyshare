@@ -3,9 +3,13 @@ import Header from "../../components/Header";
 import Hero from "../../components/Hero";
 import Categories from "../../components/Categories";
 import Featured from "../../components/Featured";
-import Footer from "../../components/Footer";
 import "../../styles/landing.css";
-
+import Popular from "../../components/Popular";
+import Earn from "../../components/Earn";
+import Steps from "../../components/Steps";
+import Trusted from "../../components/Trusted";
+import FAQ from "../../components/FAQ";
+import Footer from "../../components/Footer";
 const LandingPage = () => {
   return (
     <>
@@ -13,23 +17,14 @@ const LandingPage = () => {
       <Hero />
       <Categories />
       <Featured />
+      <Popular />
+      <Earn />
+      <Steps />
+      <Trusted />
+      <FAQ />
       <Footer />
     </>
   );
 };
 
 export default LandingPage;
-
-/*
-import React from "react";
-
-const LandingPage = () => {
-  return (
-    <div style={{ padding: "40px", fontSize: "30px" }}>
-      WORKING 🚀
-    </div>
-  );
-};
-
-export default LandingPage;
-*/

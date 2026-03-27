@@ -3,14 +3,6 @@ body {
   font-family: Arial;
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  padding: 20px;
-  background: black;
-  color: white;
-}
-
 .login-btn {
   background: white;
   border: none;
@@ -44,12 +36,5 @@ body {
   text-align: center;
   padding: 50px;
   background: black;
-  color: white;
-}
-
-.footer {
-  text-align: center;
-  padding: 20px;
-  background: #111;
   color: white;
 }

@@ -1,0 +1,173 @@
+/* WRAPPER */
+.earn-wrapper {
+    background: #F3F7FA;
+    border-radius: 20px;
+    padding: 20px 0px 0px 20px;
+    max-width: 1200px;
+    margin: 40px auto;
+    border: 1px solid #e6edf5;
+}
+
+
+/* TOP SECTION */
+.earn-top {
+    display: flex;
+    flex-direction: row;
+}
+.earn-top > div {
+    flex: 1;
+}
+/* LEFT */
+.earn-left {
+    padding: 0 24px;
+    /* max-width: 620px; */
+}
+
+.earn-left h2 {
+    font-size: 22px;
+    font-family: inter;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #000000;
+}
+
+/* BLUE TEXT */
+.earn-left p.highlight {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1379F0;
+    font-family: 'Inter';
+}
+
+/* DESCRIPTION */
+.desc {
+    font-size: 14px;
+    color: #27314B;
+    line-height: 1.6;
+    font-family: inter;
+    margin-bottom: 20px;
+}
+
+/* FEATURES */
+.features {
+    display: grid;
+    grid-template-columns: .8fr 1fr;
+    gap: 12px 5px;
+    font-size: 14px;
+    color: #27314B;
+    margin-bottom: 20px;
+    font-family: 'Inter';
+    align-items: center;
+}
+
+.features div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* BUTTONS */
+.earn-left .buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.btn {
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+}
+
+/* LIGHT BUTTON */
+.earn-left .btn.light {
+    background: #ffffff;
+    border: 1px solid #DCDDDE;
+    color: #2C2D30;
+    font-size: 12px;
+    font-weight: 500;
+    font-family: inter;
+}
+
+/* ORANGE BUTTON */
+.earn-left .btn.primary {
+    background: #FF8801;
+    border: 1px solid #DCDDDE;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 500;
+    font-family: inter;
+}
+
+/* RIGHT LOGO */
+.earn-right {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.earn-right .earn-poople  img {
+    max-width: 100%;
+    margin: 0 auto;
+}
+.earn-right .secton-logo img {
+    max-width: 240px;
+    margin: 50px auto;
+}
+
+/* BOTTOM IMAGE */
+.earn-bottom {
+  margin-top: 30px;
+  text-align: center;
+}
+
+.earn-bottom img {
+  width: 100%;
+  max-height: 120px;
+  object-fit: contain;
+  opacity: 0.8;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 1024px) {
+  .earn-top {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .earn-left {
+    max-width: 100%;
+  }
+
+  .features {
+    grid-template-columns: 1fr;
+  }
+
+  .buttons {
+    justify-content: center;
+  }
+
+  .earn-right {
+    margin-top: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .earn-wrapper {
+    padding: 20px;
+  }
+
+  .earn-left h2 {
+    font-size: 22px;
+  }
+
+  .desc {
+    font-size: 13px;
+  }
+}

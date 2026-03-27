@@ -1,7 +1,6 @@
 /* BASE */
 .hero {
   position: relative;
-  background: #f9fafb;
   padding: 80px 20px;
   overflow: hidden;
 } 
@@ -19,7 +18,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  max-width: 1200px;
+  max-width: 1250px;
   margin: auto;
   gap: 40px;
   position: relative;
@@ -33,12 +32,13 @@
 
 .hero-left h5 {
   font-size: 14px;
-  color: #3399cd;
+  color: #3398cd;
   letter-spacing: 2px;
   margin-bottom: 10px;
 }
 
 .hero-left h1 {
+  color: #000;
   font-size: 56px;
   font-weight: 700;
   line-height: 1.2;
@@ -51,26 +51,34 @@
 
 .hero-left p {
   font-size: 16px;
-  color: #6b7280;
+  color: #27314B;
   margin-bottom: 25px;
   line-height: 1.6;
+  border-left: 3px solid #3398CD;
+  padding-left:20px;
 }
-
+.hero-left h1 {
+    font-size: 50px;
+    letter-spacing: -1px;
+}
 /* BUTTONS */
 .hero-buttons {
   display: flex;
   gap: 15px;
   flex-wrap: wrap;
+  width: 300px;
+  flex-direction: column;
 }
 
 .btn-primary {
-  background: #ff6a00;
+  background: #FF8801;
   color: white;
   border: none;
   padding: 12px 22px;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 12px;
+  font-family: 'Inter', sans-serif;
 }
 
 .btn-outline {
@@ -91,7 +99,6 @@
 
 .hero-right img {
   width: 100%;
-  max-width: 500px;
 }
 
 /* ========================= */
@@ -162,9 +169,5 @@
 @media (min-width: 901px) and (max-width: 1200px) {
   .hero-left h1 {
     font-size: 48px;
-  }
-
-  .hero-right img {
-    max-width: 420px;
   }
 }
