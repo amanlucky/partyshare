@@ -1,0 +1,133 @@
+/* WRAPPER */
+.categories-wrapper {
+  position: relative;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.categories-slider {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 10px;
+}
+.categories-wrapper button.arrow {
+    display: none;
+}
+.categories-slider::-webkit-scrollbar {
+  display: none;
+}
+
+.categories-slider {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 10px;
+}
+
+.categories-slider::-webkit-scrollbar {
+  display: none;
+}
+
+/* ================= CARD ================= */
+.category-card {
+  min-width: 150px;
+  max-width: 160px;
+  background: #f8f9fb;
+  border-radius: 16px;
+  padding: 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.category-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+.category-card img {
+  margin-top: 15px;
+  object-fit: contain;
+}
+
+.category-card p {
+  font-size: 14px;
+  margin: 0;
+  font-weight: 500;
+  color: #333;
+  line-height: 1.2;
+}
+
+/* ================= ARROWS ================= */
+.arrow {
+  position: absolute;
+  top: 45%;
+  transform: translateY(-50%);
+  background: #fff;
+  border: none;
+  font-size: 16px;
+  padding: 8px 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 10;
+  transition: 0.2s;
+}
+
+.arrow:hover {
+  background: #f1f1f1;
+}
+
+.arrow.left {
+  left: -10px;
+}
+
+.arrow.right {
+  right: -10px;
+}
+
+/* ================= TABLET ================= */
+@media (max-width: 1024px) {
+  .categories-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* ================= MOBILE ================= */
+@media (max-width: 768px) {
+
+  .categories-wrapper {
+    padding: 10px;
+  }
+
+  /* grid becomes 2 per row */
+  .categories-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .category-card {
+    min-width: 120px;
+    padding: 12px;
+  }
+
+  .category-card img {
+    width: 60px;
+    height: 60px;
+  }
+
+  .category-card p {
+    font-size: 13px;
+  }
+
+  /* hide arrows on mobile (use swipe) */
+  .arrow {
+    display: none;
+  }
+}
