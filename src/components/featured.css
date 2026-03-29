@@ -80,8 +80,8 @@
 }
 
 .featured-content p {
-  font-size: 14px;
-  color: #666;
+    font-size: 14px;
+    color: #393B40;
 }
 
 /* BUTTON */
@@ -147,12 +147,38 @@ button.book-btn.light {
     grid-template-columns: 1fr;
   }
 
-  .featured-card.big {
-    flex-direction: column;
-    text-align: center;
-  }
-
   .featured-card.big img {
     width: 80%;
   }
+  .featured-wrapper {
+    padding: 0px 20px;
+}
+.featured-header h2 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #000;
+}
+.featured-content span.badge {
+    font-size: 10px;
+    font-weight: 500;
+    padding: 7px 14px;
+}
+.featured-content h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+button.book-btn {
+    font-size: 11px;
+    font-weight: 500;
+}
+.price-row span {
+    font-size: 16px;
+}
+.featured-card.ft {
+    display: none;
+}
+.featured-card.fth {
+    display: none;
+}
 }

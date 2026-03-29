@@ -104,10 +104,11 @@ img.footer-rightarrow {
 @media (max-width: 768px) {
   .footer-container {
     grid-template-columns: 1fr;
-    text-align: center;
   }
-
-  .socials {
-    justify-content: center;
-  }
+  .copyrightfooter {
+    margin: 10px 0px;
+}
+.footer-container .footer-column:nth-child(3) h4 {
+    display: none;
+}
 }

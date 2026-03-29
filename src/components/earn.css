@@ -170,4 +170,22 @@
   .desc {
     font-size: 13px;
   }
+  .earn-left {
+    text-align: left;
+}
+.earn-left h2 {
+    margin-top: 5px;
+}
+.earn-wrapper {
+    padding: 10px 0px;
+    margin: 20px 15px 0px 15px;
+    border: 1px solid #3398cd4a;
+}
+.earn-left .buttons button {
+    width: 50%;
+}
+.earn-right .secton-logo {
+    display: none;
+}
+
 }
