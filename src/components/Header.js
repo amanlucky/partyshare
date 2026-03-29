@@ -5,7 +5,6 @@ import { createInstance } from "sharetribe-flex-sdk";
 import { useHistory } from "react-router-dom";
 import "./Header.css";
 
-// Create SDK instance
 const sdk = createInstance({
   clientId: process.env.REACT_APP_SHARETRIBE_SDK_CLIENT_ID,
 });
@@ -15,106 +14,110 @@ const Header = () => {
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
 
-const history = useHistory();
- 
+  const [showSearch, setShowSearch] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+
+  const history = useHistory();
+
   useEffect(() => {
-    sdk.listings
-      .query({ perPage: 50 })
-      .then(res => {
-        const listings = res.data.data;
+    sdk.listings.query({ perPage: 50 }).then(res => {
+      const listings = res.data.data;
 
-        const uniqueCategories = [
-          ...new Set(
-            listings.map(l => l.attributes.publicData?.category)
-          ),
-        ]
-          .filter(Boolean)
-          .map(cat => ({
-            key: cat,
-            label: cat.charAt(0).toUpperCase() + cat.slice(1),
-          }));
+      const uniqueCategories = [
+        ...new Set(listings.map(l => l.attributes.publicData?.category)),
+      ]
+        .filter(Boolean)
+        .map(cat => ({
+          key: cat,
+          label: cat.charAt(0).toUpperCase() + cat.slice(1),
+        }));
 
-        setCategories(uniqueCategories);
-      })
-      .catch(err => {
-        console.error("Error fetching categories:", err);
-      });
+      setCategories(uniqueCategories);
+    });
   }, []);
 
-  // 🔥 MAIN SEARCH FUNCTION
-const handleSearch = (categoryValue = selectedCategory, searchValue = search) => {
-  let url = "/s?";
-
-  if (searchValue) url += `keywords=${searchValue}&`;
-  if (categoryValue) url += `pub_category=${categoryValue}`;
-
-  history.push(url);
-};
-
-  // 🔥 ENTER KEY SUPPORT
-const handleKeyDown = (e) => {
-  if (e.key === "Enter") {
-    handleSearch();
-  }
-};
+  const handleSearch = () => {
+    let url = "/s?";
+    if (search) url += `keywords=${search}&`;
+    if (selectedCategory) url += `pub_category=${selectedCategory}`;
+    history.push(url);
+    setShowSearch(false);
+  };
 
   return (
     <>
-      {/* TOP BAR */}
       <div className="top_bar">
         🔥 Browse Event Rentals From Trusted Local Vendors
       </div>
 
-      {/* HEADER */}
       <div className="header">
-        {/* LOGO */}
         <div className="logo">
-          <img src={logo} alt="PartyShare" />
+          <img src={logo} alt="logo" />
         </div>
 
-        {/* SEARCH BAR */}
-        <div className="search-bar">
-          {/* CATEGORY */}
-          <div className="dropdown-wrapper">
+        {/* DESKTOP */}
+        <div className="desktop-only">
+          <div className="search-bar">
             <select
-              className="category-dropdown"
               value={selectedCategory}
-              onChange={(e) => {
-                const value = e.target.value;
-                setSelectedCategory(value);
-
-                // 🔥 trigger search immediately
-                handleSearch(value, search);
-              }}
+              onChange={(e) => setSelectedCategory(e.target.value)}
             >
               <option value="">All Categories</option>
-
               {categories.map(cat => (
                 <option key={cat.key} value={cat.key}>
                   {cat.label}
                 </option>
               ))}
             </select>
+
+            <div className="input-wrapper">
+              <img src={searchIcon} alt="" onClick={handleSearch} />
+              <input
+                placeholder="Search rentals..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
           </div>
 
-          {/* INPUT */}
-          <div className="input-wrapper">
-            <span className="search-icon" onClick={handleSearch}><img src={searchIcon} alt="search" /></span>
-            <input
-              placeholder="Search rentals..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              onKeyDown={handleKeyDown}
-            />
+          <div className="auth">
+            <button className="btn-outline">Sign in</button>
+            <button className="btn-primary">Register</button>
           </div>
         </div>
 
-        {/* AUTH BUTTONS */}
-        <div className="auth">
-          <button className="btn-outline">Sign in</button>
-          <button className="btn-primary">Register</button>
+        {/* MOBILE */}
+        <div className="mobile-icons">
+          <span onClick={() => setShowSearch(!showSearch)}>🔍</span>
+          <span onClick={() => setShowMenu(true)}>☰</span>
         </div>
       </div>
+
+      {/* MOBILE SEARCH */}
+      {showSearch && (
+        <div className="mobile-search">
+          <input
+            placeholder="Search rentals..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <button onClick={handleSearch}>Search</button>
+        </div>
+      )}
+
+      {/* MOBILE MENU */}
+      {showMenu && (
+        <>
+          <div className="overlay" onClick={() => setShowMenu(false)} />
+          <div className="mobile-menu">
+            <div className="close" onClick={() => setShowMenu(false)}>✕</div>
+            <button><a href="/s">Browse Rentals</a></button>
+            <button><a href="/list">List a Rental</a></button>
+            <button><a href="/sign-in">Sign in</a></button>
+            <button><a href="/register">Register</a></button>
+          </div>
+        </>
+      )}
     </>
   );
 };

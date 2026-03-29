@@ -86,4 +86,7 @@
     align-items: flex-start;
     gap: 10px;
   }
+ .faq-header h2 {
+    margin: 0 auto;
+}
 }

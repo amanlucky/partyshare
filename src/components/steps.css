@@ -12,7 +12,6 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 40px;
 }
 
 /* LEFT */
@@ -88,9 +87,11 @@
 }
 
 @media (max-width: 768px) {
-  .steps-wrapper {
+.steps-wrapper {
     padding: 20px;
-  }
+    margin: 15px;
+    border: 1px solid #3398cd4a;
+}
 
   .steps-left h2 {
     font-size: 22px;
@@ -100,4 +101,20 @@
     flex-direction: column;
     gap: 10px;
   }
+  .steps-list {
+    display: flex;
+    flex-wrap: wrap; /* allow items to move to next row */
+    gap: 10px; /* optional spacing */
+    justify-content: space-between;
+}
+
+.steps-list li {
+    flex: 0 0 45%; /* 2 items per row */
+}
+
+/* Make 3rd item full width */
+.steps-list li:nth-child(3) {
+    flex: 0 0 100%;
+    
+}
 }

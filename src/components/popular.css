@@ -117,6 +117,49 @@
 
 @media (max-width: 768px) {
   .popular-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
   }
+  .popular-card {
+    padding: 0px;
+}
+.image-box img {
+    object-fit: fill;
+}
+.image-box {
+    padding: 0px;
+    box-shadow: unset;
+}
+.popular-card h3 {
+    font-size: 12px;
+    margin: 10px 0px 0px 0px;
+    font-family: inter;
+    line-height: 1.2;
+    min-height: unset;
+}
+.iconsprice .icons img {
+    width: 20px;
+    height: 20px;
+}
+.price-row span {
+    font-size: 13px;
+}
+.price-row span small {
+    font-size: 8px;
+}
+.card-footer .rating {
+    font-size: 9px;
+    color: #393B40;
+}
+button.book-btn.light {
+    color: #2C2D30;
+    font-size: 11px;
+    font-weight: 500;
+}
+.popular-grid .popular-card:nth-child(3),
+.popular-grid .popular-card:nth-child(4) {
+    display: none;
+}
+.popular-wrapper {
+    padding: 5px 20px;
+}
 }
