@@ -7,7 +7,7 @@ import "./CategoryPage.css";
 const sdk = createInstance({
   clientId: process.env.REACT_APP_SHARETRIBE_SDK_CLIENT_ID,
 });
-
+  
 const CategoryPage = (props) => {
   const [listings, setListings] = useState([]);
   const [included, setIncluded] = useState([]);
