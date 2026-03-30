@@ -91,7 +91,7 @@
     "dev-frontend": "sharetribe-scripts start",
     "dev-backend": "nodemon server/apiServer.js",
     "dev": "yarn run config-check&&cross-env NODE_ENV=development REACT_APP_DEV_API_SERVER_PORT=3500 concurrently --kill-others \"yarn run dev-frontend\" \"yarn run dev-backend\"",
-    "build": "react-scripts build",
+   "build": "PUBLIC_URL=/ react-scripts build",
     "start": "react-scripts start",
     "build-web": "sharetribe-scripts build",
     "build-server": "sharetribe-scripts build-server",
