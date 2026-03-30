@@ -19,20 +19,21 @@ const Categories = () => {
 
   return (
     <div className="categories-wrapper">
-      <button className="arrow left" onClick={() => scroll("left")}>
-        ◀
-      </button>
-
-      <button className="arrow right" onClick={() => scroll("right")}>
-        ▶
-      </button>
+      <button className="arrow left" onClick={() => scroll("left")}>◀</button>
+      <button className="arrow right" onClick={() => scroll("right")}>▶</button>
 
       <div ref={scrollRef} className="categories-slider">
         {categories.map((cat) => (
-          <div className="category-card" key={cat.id}>
-            <p>{cat.name}</p>
-            <img src={cat.image} alt={cat.name} />
-          </div>
+          <a
+            key={cat.id}
+            href={`/category/${cat.slug}`}  // 🔥 THIS FIXES EVERYTHING
+            style={{ textDecoration: "none", color: "inherit" }}
+          >
+            <div className="category-card">
+              <p>{cat.name}</p>
+              <img src={cat.image} alt={cat.name} />
+            </div>
+          </a>
         ))}
       </div>
     </div>

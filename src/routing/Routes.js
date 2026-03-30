@@ -263,7 +263,13 @@ const Routes = (props, context) => {
     );
   };
 
-return <LandingPage />;
+return (
+  <Switch>
+    {routeConfiguration.map(toRouteComponent)}
+    <Route component={NotFoundPage} />
+  </Switch>
+);
+
 };
 
 export default withRouter(Routes);

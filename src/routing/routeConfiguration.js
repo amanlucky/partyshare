@@ -3,6 +3,7 @@ import loadable from '@loadable/component';
 import getPageDataLoadingAPI from '../containers/pageDataLoadingAPI';
 import NotFoundPage from '../containers/NotFoundPage/NotFoundPage';
 import PreviewResolverPage from '../containers/PreviewResolverPage/PreviewResolverPage';
+import CategoryPage from "../containers/CategoryPage";
 
 // routeConfiguration needs to initialize containers first
 // Otherwise, components will import form container eventually and
@@ -76,10 +77,16 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
   
   return [
     {
+      path: '/category/:slug',
+      name: 'CategoryPage',
+      component: CategoryPage,
+    },
+    {
       path: '/',
       name: 'LandingPage',
       component: LandingPage,
       loadData: pageDataLoadingAPI.LandingPage.loadData,
+      exact: true, // still add (safe)
     },
     {
       path: '/p/:pageId',
