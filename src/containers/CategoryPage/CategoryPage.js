@@ -3,7 +3,7 @@ import { createInstance } from "sharetribe-flex-sdk"; // ✅ keep this (web temp
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import "./CategoryPage.css";
-
+import { useParams } from "react-router-dom";
 const sdk = createInstance({
   clientId: process.env.REACT_APP_SHARETRIBE_SDK_CLIENT_ID,
 });
@@ -14,8 +14,10 @@ const CategoryPage = (props) => {
   const [loading, setLoading] = useState(true);
   const [keyword, setKeyword] = useState("");
 
-  const category = props.params.slug;
 
+
+const { slug: category } = useParams();
+ console.log("CATEGORY:", category);
   const fetchListings = () => {
     setLoading(true);
 
@@ -60,7 +62,7 @@ const CategoryPage = (props) => {
 
       <div className="category-page">
         <h1 className="category-title">
-          {category.replace("-", " ")}
+          {category ? category.replace("-", " ") : "Category"}
         </h1>
 
         {/* SEARCH */}
