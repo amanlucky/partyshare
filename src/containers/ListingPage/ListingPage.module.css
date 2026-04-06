@@ -835,3 +835,23 @@
   width: 100%;
   height: 100%;
 }
+
+/* ===== FORCE 2 COLUMN LAYOUT ===== */
+
+.contentWrapper {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+}
+
+/* LEFT SIDE */
+.mainColumn {
+  width: 65%;
+}
+
+/* RIGHT SIDE */
+.orderColumn {
+  width: 35%;
+  position: sticky;
+  top: 120px;
+}

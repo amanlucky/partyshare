@@ -2,7 +2,7 @@ import React from "react";
 import "./popular.css";
 
 // ✅ Import your images
-import dining from "../assets/dining.png";
+import dining from "../assets/dining.svg";
 import tent from "../assets/tent.png";
 import golf from "../assets/golf.png";
 import sofa from "../assets/sofa.png";

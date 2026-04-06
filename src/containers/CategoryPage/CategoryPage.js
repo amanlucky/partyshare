@@ -1,13 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { createInstance } from "sharetribe-flex-sdk"; // ✅ keep this (web template)
+import { createInstance } from "sharetribe-flex-sdk";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import "./CategoryPage.css";
+<<<<<<< HEAD
+
+import ListingCard from "./ListingCard";
+import CategoryIcons from "./CategoryIcons";
+import MostRentedSection from "./MostRentedSection";
+
+=======
 import { useParams } from "react-router-dom";
+>>>>>>> 03150c40f6e9a531dbda2233601fb9c63e7c9da8
 const sdk = createInstance({
   clientId: process.env.REACT_APP_SHARETRIBE_SDK_CLIENT_ID,
 });
-  
+
 const CategoryPage = (props) => {
   const [listings, setListings] = useState([]);
   const [included, setIncluded] = useState([]);
@@ -15,9 +23,17 @@ const CategoryPage = (props) => {
   const [keyword, setKeyword] = useState("");
 
 
+<<<<<<< HEAD
+  // ✅ FORMAT CATEGORY NAME (IMPORTANT)
+  const formattedCategory = category
+    .replaceAll("-", " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+
+=======
 
 const { slug: category } = useParams();
  console.log("CATEGORY:", category);
+>>>>>>> 03150c40f6e9a531dbda2233601fb9c63e7c9da8
   const fetchListings = () => {
     setLoading(true);
 
@@ -26,14 +42,10 @@ const { slug: category } = useParams();
         perPage: 80,
         pub_category: category,
         keywords: keyword || undefined,
-
-        include: ["images"], // ✅ required
-        "fields.image": ["variants"], // ✅ required
+        include: ["images"],
+        "fields.image": ["variants"],
       })
       .then((res) => {
-        console.log("FULL RESPONSE:", res.data);
-        console.log("INCLUDED:", res.data.included);
-
         setListings(res.data.data);
         setIncluded(res.data.included || []);
         setLoading(false);
@@ -48,7 +60,7 @@ const { slug: category } = useParams();
     fetchListings();
   }, [category]);
 
-  // ✅ CREATE IMAGE MAP (IMPORTANT)
+  // ✅ IMAGE MAP
   const imageMap = {};
   included.forEach((img) => {
     if (img.type === "image") {
@@ -61,41 +73,41 @@ const { slug: category } = useParams();
       <Header />
 
       <div className="category-page">
+<<<<<<< HEAD
+        
+        {/* ✅ MAIN TITLE */}
+        <h1 className="category-title">{formattedCategory}</h1>
+=======
         <h1 className="category-title">
           {category ? category.replace("-", " ") : "Category"}
         </h1>
+>>>>>>> 03150c40f6e9a531dbda2233601fb9c63e7c9da8
 
-        {/* SEARCH */}
-        <div className="category-search">
-          <input
-            placeholder="Search rentals..."
-            value={keyword}
-            onChange={(e) => setKeyword(e.target.value)}
-          />
-          <button onClick={fetchListings}>Search</button>
+        {/* ✅ CATEGORY ICONS */}
+        <CategoryIcons />
+
+        {/* ✅ MOST RENTED SECTION */}
+        <MostRentedSection />
+
+        {/* ✅ LIST SECTION HEADER (MATCH SCREENSHOT) */}
+        <div className="section-header">
+          <h2 className="section-title">{formattedCategory}</h2>
+          <span className="see-all">See All →</span>
         </div>
 
         {/* LOADING */}
         {loading ? (
           <p>Loading rentals...</p>
         ) : (
-          <div className="grid">
+          <div className="listing-grid">
             {listings.map((item) => {
-              const imageRefs =
-                item.relationships?.images?.data;
+              const imageRefs = item.relationships?.images?.data;
 
               let image = "";
 
               if (imageRefs && imageRefs.length > 0) {
-                const imageId = imageRefs[0].id.uuid; // ✅ FIX
-
-                const imageData = imageMap[imageId]; // ✅ FIX
-
-                // 🔍 DEBUG
-                console.log("------");
-                console.log("LISTING:", item.id.uuid);
-                console.log("IMAGE ID:", imageId);
-                console.log("IMAGE DATA:", imageData);
+                const imageId = imageRefs[0].id.uuid;
+                const imageData = imageMap[imageId];
 
                 if (imageData?.attributes?.variants) {
                   image =
@@ -106,40 +118,20 @@ const { slug: category } = useParams();
                 }
               }
 
-              // ❗ fallback only if no image
+              // fallback
               if (!image) {
-                console.warn("FALLBACK USED:", item.id.uuid);
-
                 image = `https://picsum.photos/300/200?random=${item.id.uuid}`;
               }
 
-              const price =
-                item.attributes.price?.amount / 100;
-
-              const slug = item.attributes.title
-                .toLowerCase()
-                .replace(/[^a-z0-9]+/g, "-");
+              const price = item.attributes.price?.amount / 100;
 
               return (
-                <div
+                <ListingCard
                   key={item.id.uuid}
-                  className="card"
-                  onClick={() =>
-                    (window.location.href = `/l/${slug}/${item.id.uuid}`)
-                  }
-                >
-                  <img src={image} alt="" />
-
-                  <div className="card-body">
-                    <p className="card-title">
-                      {item.attributes.title}
-                    </p>
-
-                    <p className="card-price">
-                      ₹{price} / day
-                    </p>
-                  </div>
-                </div>
+                  item={item}
+                  image={image}
+                  price={price}
+                />
               );
             })}
           </div>

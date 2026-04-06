@@ -32,3 +32,19 @@
     margin-top: 0;
   }
 }
+
+
+
+.root {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.submitButton {
+  background: #ff7a00;
+  border-radius: 8px;
+  font-weight: 600;
+}

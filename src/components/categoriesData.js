@@ -1,10 +1,10 @@
-import essentials from "../assets/essentials.png";
-import decorations from "../assets/decorations.png";
-import audio from "../assets/audio.png";
-import catering from "../assets/catering.png";
-import tents from "../assets/tents.png";
-import outdoor from "../assets/outdoor.png";
-import staging from "../assets/stagging.png";
+import essentials from "../assets/essentials.svg";
+import decorations from "../assets/decorations.svg";
+import audio from "../assets/audio.svg";
+import catering from "../assets/catering.svg";
+import tents from "../assets/tents.svg";
+import outdoor from "../assets/outdoor.svg";
+import staging from "../assets/stagging.svg";
 
 const categories = [
   { id: 1, name: "Essentials", slug: "essentials", image: essentials },
