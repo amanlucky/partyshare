@@ -276,4 +276,7 @@ button.book-btn {
 .card-footer {
     flex-direction: column;
 }
+.card-price {
+    flex-direction: column;
+}
 }

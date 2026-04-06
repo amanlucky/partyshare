@@ -1,39 +1,34 @@
 import React, { useEffect, useState } from "react";
 import { createInstance } from "sharetribe-flex-sdk";
+import { useParams } from "react-router-dom";
+
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import "./CategoryPage.css";
-<<<<<<< HEAD
 
 import ListingCard from "./ListingCard";
 import CategoryIcons from "./CategoryIcons";
 import MostRentedSection from "./MostRentedSection";
 
-=======
-import { useParams } from "react-router-dom";
->>>>>>> 03150c40f6e9a531dbda2233601fb9c63e7c9da8
 const sdk = createInstance({
   clientId: process.env.REACT_APP_SHARETRIBE_SDK_CLIENT_ID,
 });
 
-const CategoryPage = (props) => {
+const CategoryPage = () => {
+  const { slug: category } = useParams();
+
   const [listings, setListings] = useState([]);
   const [included, setIncluded] = useState([]);
   const [loading, setLoading] = useState(true);
   const [keyword, setKeyword] = useState("");
 
-
-<<<<<<< HEAD
-  // ✅ FORMAT CATEGORY NAME (IMPORTANT)
+  // ✅ FORMAT CATEGORY NAME
   const formattedCategory = category
-    .replaceAll("-", " ")
-    .replace(/\b\w/g, (c) => c.toUpperCase());
+    ? category
+        .replaceAll("-", " ")
+        .replace(/\b\w/g, (c) => c.toUpperCase())
+    : "Category";
 
-=======
-
-const { slug: category } = useParams();
- console.log("CATEGORY:", category);
->>>>>>> 03150c40f6e9a531dbda2233601fb9c63e7c9da8
   const fetchListings = () => {
     setLoading(true);
 
@@ -57,7 +52,9 @@ const { slug: category } = useParams();
   };
 
   useEffect(() => {
-    fetchListings();
+    if (category) {
+      fetchListings();
+    }
   }, [category]);
 
   // ✅ IMAGE MAP
@@ -73,15 +70,8 @@ const { slug: category } = useParams();
       <Header />
 
       <div className="category-page">
-<<<<<<< HEAD
-        
         {/* ✅ MAIN TITLE */}
         <h1 className="category-title">{formattedCategory}</h1>
-=======
-        <h1 className="category-title">
-          {category ? category.replace("-", " ") : "Category"}
-        </h1>
->>>>>>> 03150c40f6e9a531dbda2233601fb9c63e7c9da8
 
         {/* ✅ CATEGORY ICONS */}
         <CategoryIcons />
@@ -89,7 +79,7 @@ const { slug: category } = useParams();
         {/* ✅ MOST RENTED SECTION */}
         <MostRentedSection />
 
-        {/* ✅ LIST SECTION HEADER (MATCH SCREENSHOT) */}
+        {/* ✅ LIST SECTION HEADER */}
         <div className="section-header">
           <h2 className="section-title">{formattedCategory}</h2>
           <span className="see-all">See All →</span>
