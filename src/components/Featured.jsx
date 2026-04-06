@@ -1,10 +1,9 @@
 import React from "react";
 import "./featured.css";
 
-import chair from "../assets/chair.png";
-import dining from "../assets/dining.png";
-import light1 from "../assets/lightl.png";
-import light2 from "../assets/lightr.png";
+import chair from "../assets/lounge.svg";
+import dining from "../assets/dining.svg";
+import light from "../assets/light.svg";
 
 
 const Featured = () => {
@@ -62,8 +61,7 @@ const Featured = () => {
 
             {/* 🔥 MULTIPLE IMAGES */}
             <div className="multi-images">
-              <img src={light1} alt="light1" />
-              <img src={light2} alt="light2" />
+              <img src={light} alt="light" />
             </div>
           </div>
 
