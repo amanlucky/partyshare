@@ -13,8 +13,6 @@
    that the user controls. This overflow works together with the
    `disableThumbnailScroll` option in the component JS.
    */
-  width: 100vw;
-  overflow: auto;
 
   @media (--viewportMedium) {
     width: calc(100vw - 48px);
