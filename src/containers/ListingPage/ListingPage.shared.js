@@ -312,6 +312,7 @@ const PlainPage = props => {
   const { title, topbar, scrollingDisabled, children } = props;
   return (
     <Page title={title} scrollingDisabled={scrollingDisabled}>
+      
       <LayoutSingleColumn topbar={topbar} footer={<FooterContainer />}>
         {children}
       </LayoutSingleColumn>
@@ -351,6 +352,7 @@ export const LoadingPage = props => {
       scrollingDisabled={scrollingDisabled}
     >
       <p className={css.loadingText}>
+        
         <FormattedMessage id="ListingPage.loadingListingMessage" />
       </p>
     </PlainPage>

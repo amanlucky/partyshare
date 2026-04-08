@@ -1,0 +1,37 @@
+/* ===== AIRBNB STYLE (SAFE) ===== */
+
+/* MAIN LAYOUT */
+.customListingPage {
+  display: flex;
+  gap: 32px; /* reduce from 48 */
+  align-items: flex-start;
+  max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  flex-direction: column;
+}
+
+.mediandfrm {
+    display: flex;
+    flex-direction: column;
+}
+.prodcutdetails {
+    display: flex;
+    flex-direction: row;
+}
+.leftmedia {
+    width: 50%;
+}
+.rightsectiondetails {
+    width: 50%;
+}
+/* MOBILE */
+@media (max-width: 768px) {
+  .customListingPage {
+    flex-direction: column;
+  }
+
+  .customListingPage .image-gallery-slide img {
+    height: 300px;
+  }
+}

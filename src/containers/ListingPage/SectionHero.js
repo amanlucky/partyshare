@@ -42,6 +42,7 @@ const SectionHero = props => {
   ) : null;
 
   return (
+
     <section className={css.sectionHero} data-testid="hero">
       <div className={css.imageWrapperForSectionHero} onClick={handleViewPhotosClick}>
         {mounted && listing.id && isOwnListing ? (

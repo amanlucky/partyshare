@@ -92,6 +92,7 @@ import SectionGallery from './SectionGallery';
 import CustomListingFields from './CustomListingFields';
 
 import css from './ListingPage.module.css';
+import "./Productpage.css";
 
 const MIN_LENGTH_FOR_LONG_WORDS_IN_TITLE = 16;
 
@@ -349,9 +350,10 @@ export const ListingPageComponent = props => {
         },
       }}
     >
+
       <LayoutSingleColumn className={css.pageRoot} topbar={topbar} footer={<FooterContainer />}>
-        <div className={css.contentWrapperForProductLayout}>
-          <div className={css.mainColumnForProductLayout}>
+        <div className={`${css.contentWrapperForProductLayout} customListingPage`}>
+          <div className={`${css.mainColumnForProductLayout} mediandfrm`}>
             {mounted && currentListing.id && noPayoutDetailsSetWithOwnListing ? (
               <ActionBarMaybe
                 className={css.actionBarForProductLayout}
@@ -375,12 +377,16 @@ export const ListingPageComponent = props => {
                 }}
               />
             ) : null}
+             <div className="prodcutdetails">
+              <div className="leftmedia">
             {showListingImage && (
               <SectionGallery
                 listing={currentListing}
                 variantPrefix={config.layout.listingImage.variantPrefix}
               />
             )}
+            </div>
+            <div className="rightsectiondetails">
             <div
               className={showListingImage ? css.mobileHeading : css.noListingImageHeadingProduct}
             >
@@ -425,7 +431,8 @@ export const ListingPageComponent = props => {
               onManageDisableScrolling={onManageDisableScrolling}
             />
           </div>
-          <div className={css.orderColumnForProductLayout}>
+          </div>
+          <div className={`${css.orderColumnForProductLayout} orderPanelSection`}>
             <OrderPanel
               className={classNames(css.productOrderPanel, {
                 [css.imagesEnabled]: showListingImage,
@@ -461,6 +468,7 @@ export const ListingPageComponent = props => {
               showListingImage={showListingImage}
             />
           </div>
+        </div>
         </div>
       </LayoutSingleColumn>
     </Page>
