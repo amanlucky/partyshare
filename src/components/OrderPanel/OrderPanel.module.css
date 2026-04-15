@@ -9,7 +9,6 @@
   composes: marketplaceModalInMobileBaseStyles from global;
 
   height: unset;
-  min-height: 100vh;
 
   @media (--viewportMedium) {
     flex-basis: 576px;

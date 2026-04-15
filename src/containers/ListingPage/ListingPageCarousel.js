@@ -90,15 +90,19 @@ import SectionAuthorMaybe from './SectionAuthorMaybe';
 import SectionMapMaybe from './SectionMapMaybe';
 import SectionGallery from './SectionGallery';
 import CustomListingFields from './CustomListingFields';
-
+import Header from '../../components/Header';
+import Footer from "../../components/Footer";
 import css from './ListingPage.module.css';
 import "./Productpage.css";
-
+import vendorIcon  from "../../assets/product/vendor.svg";
 const MIN_LENGTH_FOR_LONG_WORDS_IN_TITLE = 16;
 
 const { UUID } = sdkTypes;
 
 export const ListingPageComponent = props => {
+   
+  const [quantity, setQuantity] = useState(1);
+
   const [inquiryModalOpen, setInquiryModalOpen] = useState(
     props.inquiryModalOpenForListingId === props.params.id
   );
@@ -171,8 +175,9 @@ export const ListingPageComponent = props => {
     return <NamedRedirect name="ListingPage" params={params} search={location.search} />;
   }
 
-  const topbar = <TopbarContainer />;
-
+ // const topbar = <TopbarContainer />;
+const topbar = <Header />;
+const footer = <Footer />;
   if (showListingError && showListingError.status === 404) {
     // 404 listing not found
     return <NotFoundPage staticContext={props.staticContext} />;
@@ -192,7 +197,8 @@ export const ListingPageComponent = props => {
     publicData = {},
     metadata = {},
   } = currentListing.attributes;
-
+console.log("PUBLIC DATA:", publicData);
+console.log("INCLUDES:", publicData?.includes);
   const richTitle = (
     <span>
       {richText(title, {
@@ -288,18 +294,24 @@ export const ListingPageComponent = props => {
     onInitializeCardPaymentData,
   });
 
-  const handleOrderSubmit = values => {
-    const isCurrentlyClosed = currentListing.attributes.state === LISTING_STATE_CLOSED;
-    if (isOwnListing || isCurrentlyClosed) {
-      window.scrollTo(0, 0);
-    } else if (isNegotiation && unitType === REQUEST) {
-      onNavigateToMakeOfferPage(values);
-    } else if (isNegotiation && unitType === OFFER) {
-      onNavigateToRequestQuotePage(values);
-    } else {
-      onSubmit(values);
-    }
+const handleOrderSubmit = values => {
+  const updatedValues = {
+    ...values,
+    quantity: quantity, // ✅ ADD THIS
   };
+
+  const isCurrentlyClosed = currentListing.attributes.state === LISTING_STATE_CLOSED;
+
+  if (isOwnListing || isCurrentlyClosed) {
+    window.scrollTo(0, 0);
+  } else if (isNegotiation && unitType === REQUEST) {
+    onNavigateToMakeOfferPage(updatedValues);
+  } else if (isNegotiation && unitType === OFFER) {
+    onNavigateToRequestQuotePage(updatedValues);
+  } else {
+    onSubmit(updatedValues); // ✅ PASS UPDATED VALUES
+  }
+};
 
   const facebookImages = listingImages(currentListing, 'facebook');
   const twitterImages = listingImages(currentListing, 'twitter');
@@ -322,7 +334,7 @@ export const ListingPageComponent = props => {
     : currentStock > 0
     ? 'https://schema.org/InStock'
     : 'https://schema.org/OutOfStock';
-
+  const descriptionList = description.split('\n').filter(item => item.trim() !== '');
   const availabilityMaybe = schemaAvailability ? { availability: schemaAvailability } : {};
   const noIndexMaybe =
     currentListing.attributes.state === LISTING_STATE_CLOSED ? { noIndex: true } : {};
@@ -351,7 +363,7 @@ export const ListingPageComponent = props => {
       }}
     >
 
-      <LayoutSingleColumn className={css.pageRoot} topbar={topbar} footer={<FooterContainer />}>
+      <LayoutSingleColumn className={css.pageRoot} topbar={topbar} footer={footer}>
         <div className={`${css.contentWrapperForProductLayout} customListingPage`}>
           <div className={`${css.mainColumnForProductLayout} mediandfrm`}>
             {mounted && currentListing.id && noPayoutDetailsSetWithOwnListing ? (
@@ -378,6 +390,7 @@ export const ListingPageComponent = props => {
               />
             ) : null}
              <div className="prodcutdetails">
+
               <div className="leftmedia">
             {showListingImage && (
               <SectionGallery
@@ -391,16 +404,114 @@ export const ListingPageComponent = props => {
               className={showListingImage ? css.mobileHeading : css.noListingImageHeadingProduct}
             >
               {showListingImage ? (
-                <H4 as="h1" className={css.orderPanelTitle}>
-                  <FormattedMessage id="ListingPage.orderTitle" values={{ title: richTitle }} />
+                <H4 as="h1" className={`${css.orderPanelTitle} productTitle`}>
+                  
+                  <div className="productTitle">
+                    {richTitle}
+                    </div>
+                     <div className="reviews">
+                    ⭐ {reviews.length > 0 ? (reviews[0].attributes.rating) : "4.5"} 
+                    ({reviews.length} reviews)
+                  </div>
+                  <div className="vendorRow">
+                    <div className="vendorimgname">
+                       <img src={vendorIcon} alt="vendor" className="vendorAvatar" />
+
+                      <span className="vendorName">{authorDisplayName}</span>
+                    </div>
+                     
+                    <div className="vendorLink"
+                        onClick={() => history.push(`/vendor/${authorId}`)}
+                      >
+                        View vendor's other items
+                      </div>
+                    </div>
+                 
+                  <h2 className="productPrice">
+                    {price ? `${price.amount / 100 * quantity} ${price.currency}` : formattedPrice}
+                  </h2>
+                  {/* ✅ QUANTITY UI */}
+                    <div className="quantityBox">
+                      <label>Quantity</label>
+
+                      <div className="quantityControls">
+                        <button
+                          onClick={() => setQuantity(prev => Math.max(1, prev - 1))}
+                        >
+                          -
+                        </button>
+
+                        <input type="number" value={quantity} readOnly />
+
+                        <button
+                          onClick={() => setQuantity(prev => prev + 1)}
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
                 </H4>
+                
               ) : (
                 <H3 as="h1" className={css.orderPanelTitle}>
-                  <FormattedMessage id="ListingPage.orderTitle" values={{ title: richTitle }} />
+                  <FormattedMessage id="ListingPage.orderTitle"  values={{ title: richTitle }} />
                 </H3>
               )}
             </div>
             {showDescription && <SectionText text={description} showAsIngress />}
+           <div className={`${css.orderColumnForProductLayout} orderPanelSection`}>
+            <OrderPanel
+              className={classNames(css.productOrderPanel, {
+                [css.imagesEnabled]: showListingImage,
+              })}
+              listing={currentListing}
+              isOwnListing={isOwnListing}
+              onSubmit={handleOrderSubmit}
+              authorLink={
+                <NamedLink
+                  className={css.authorNameLink}
+                  name={isVariant ? 'ListingPageVariant' : 'ListingPage'}
+                  params={params}
+                  to={{ hash: '#author' }}
+                >
+                  {authorDisplayName}
+                </NamedLink>
+              }
+              title={<FormattedMessage id="ListingPage.orderTitle" values={{ title: richTitle }} />}
+              titleDesktop={
+                <H4 as="h1" className={css.orderPanelTitle}>
+                  <FormattedMessage id="ListingPage.orderTitle"values={{ title: richTitle }} />
+                </H4>
+              }
+              payoutDetailsWarning={payoutDetailsWarning}
+              author={ensuredAuthor}
+              onManageDisableScrolling={onManageDisableScrolling}
+              onContactUser={onContactUser}
+              {...restOfProps}
+              validListingTypes={config.listing.listingTypes}
+              marketplaceCurrency={config.currency}
+              dayCountAvailableForBooking={config.stripe.dayCountAvailableForBooking}
+              marketplaceName={config.marketplaceName}
+              showListingImage={showListingImage}
+            />
+          </div>
+            <ul>
+              {(publicData?.includes || []).map((item, i) => (
+                <li key={i}>{item}</li>
+              ))}
+            </ul>
+        
+          {descriptionList.length > 0 && (
+            <div className={css.descriptionSection}>
+              <h3>Listing description</h3>
+              <ul>
+                {descriptionList.map((item, index) => (
+                  <li key={index}>{item}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
 
             <CustomListingFields
               publicData={publicData}
@@ -432,42 +543,7 @@ export const ListingPageComponent = props => {
             />
           </div>
           </div>
-          <div className={`${css.orderColumnForProductLayout} orderPanelSection`}>
-            <OrderPanel
-              className={classNames(css.productOrderPanel, {
-                [css.imagesEnabled]: showListingImage,
-              })}
-              listing={currentListing}
-              isOwnListing={isOwnListing}
-              onSubmit={handleOrderSubmit}
-              authorLink={
-                <NamedLink
-                  className={css.authorNameLink}
-                  name={isVariant ? 'ListingPageVariant' : 'ListingPage'}
-                  params={params}
-                  to={{ hash: '#author' }}
-                >
-                  {authorDisplayName}
-                </NamedLink>
-              }
-              title={<FormattedMessage id="ListingPage.orderTitle" values={{ title: richTitle }} />}
-              titleDesktop={
-                <H4 as="h1" className={css.orderPanelTitle}>
-                  <FormattedMessage id="ListingPage.orderTitle" values={{ title: richTitle }} />
-                </H4>
-              }
-              payoutDetailsWarning={payoutDetailsWarning}
-              author={ensuredAuthor}
-              onManageDisableScrolling={onManageDisableScrolling}
-              onContactUser={onContactUser}
-              {...restOfProps}
-              validListingTypes={config.listing.listingTypes}
-              marketplaceCurrency={config.currency}
-              dayCountAvailableForBooking={config.stripe.dayCountAvailableForBooking}
-              marketplaceName={config.marketplaceName}
-              showListingImage={showListingImage}
-            />
-          </div>
+          
         </div>
         </div>
       </LayoutSingleColumn>

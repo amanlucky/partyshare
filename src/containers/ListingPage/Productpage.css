@@ -14,6 +14,7 @@
 .mediandfrm {
     display: flex;
     flex-direction: column;
+    width:100%
 }
 .prodcutdetails {
     display: flex;
@@ -24,6 +25,93 @@
 }
 .rightsectiondetails {
     width: 50%;
+}
+.productTitle .productTitle {
+    color: #000000;
+    font-size: 35px;
+    font-weight: bolder;
+    margin: 0px;
+}
+.reviews {
+    margin-top: 10px;
+    font-size: 13px;
+    font-family: 'Inter';
+    color: #394B40;
+}
+main#main-content {
+    margin-top: 60px;
+}
+header {
+    background: #fff;
+}
+.vendorimgname{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+
+}
+.vendorRow {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    margin-top: 15px;
+    justify-content: space-between;
+}
+img.vendorAvatar {
+    width: 34px;
+    height: 34px;
+}
+span.vendorName {
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: capitalize;
+    color: #000000;
+}
+.vendorLink {
+    color: #2C2D30;
+    font-size: 12px;
+    border: 1px solid #DCDDDE;
+    padding: 1px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.quantityBox {
+  margin: 15px 0;
+}
+
+.quantityBox label {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 6px;
+  color: #444;
+}
+
+.quantityControls {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  width: fit-content;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.quantityControls button {
+  width: 35px;
+  height: 35px;
+  border: none;
+  background: #f5f5f5;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.quantityControls input {
+  width: 50px;
+  text-align: center;
+  border: none;
+  outline: none;
 }
 /* MOBILE */
 @media (max-width: 768px) {
