@@ -1065,7 +1065,7 @@ textarea {
 
   /* Button colors */
   /* Primary button uses success color */
-  background-color: var(--colorPrimaryButton);
+  background-color:#FF8801;
   color: var(--colorWhite);
 
   @media (--viewportMedium) {
@@ -1076,7 +1076,7 @@ textarea {
 .buttonPrimary:hover {
   outline: none;
   box-shadow: var(--boxShadowButton);
-  background-color: var(--colorPrimaryButtonDark);
+  background-color: #e47c05;
   color: var(--colorWhite);
 }
 .buttonPrimary:hover {

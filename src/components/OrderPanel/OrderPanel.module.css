@@ -29,7 +29,7 @@
 }
 
 .modalHeading {
-  margin-top: 89px;
+  /*margin-top: 89px;*/
   margin-bottom: 0px;
   padding: 0 24px;
 
@@ -164,6 +164,7 @@
 }
 
 .openOrderForm {
+  display:none !important;
   /* Ensure that mobile button is over Footer too */
   z-index: 9;
   position: fixed;
@@ -188,6 +189,9 @@
   }
 }
 
+.priceContainer {
+display: none !important;
+}
 .priceContainerInCTA,
 .priceContainer {
   /* Layout */
