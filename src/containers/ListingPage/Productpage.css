@@ -21,10 +21,11 @@
     flex-direction: row;
 }
 .leftmedia {
-    width: 50%;
+    width: 45%;
 }
 .rightsectiondetails {
-    width: 50%;
+    width: 55%;
+    padding: 15px 25px;
 }
 .productTitle .productTitle {
     color: #000000;
@@ -40,6 +41,7 @@
 }
 main#main-content {
     margin-top: 60px;
+    margin: 50px 45px;
 }
 header {
     background: #fff;
@@ -112,6 +114,124 @@ span.vendorName {
   text-align: center;
   border: none;
   outline: none;
+}
+/* =========================
+   ACCORDION (SCOPED)
+========================= */
+
+.customListingPage .accordion {
+  margin-top: 25px;
+  border-top: 1px solid #E6E6E6;
+}
+
+.customListingPage .accordion .item {
+  border-bottom: 1px solid #E6E6E6;
+}
+
+.customListingPage .accordion .header {
+  font-size: 15px;
+  font-weight: 600;
+  padding: 16px 0;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #1F1F1F;
+}
+
+.customListingPage .accordion .header::after {
+  content: '+';
+  font-size: 18px;
+  color: #555;
+  transition: 0.2s;
+}
+
+.customListingPage .accordion .item.active .header::after {
+  content: '−';
+}
+
+/* BODY → renamed safely */
+.customListingPage .accordion .accordionBody {
+  padding: 10px 0 18px;
+  font-size: 14px;
+  color: #444;
+}
+
+/* =========================
+   INCLUDES LIST
+========================= */
+
+.customListingPage .accordion .accordionBody ul {
+  padding-left: 18px;
+}
+
+.customListingPage .accordion .accordionBody li {
+  margin-bottom: 6px;
+}
+
+/* =========================
+   SPECS TABLE
+========================= */
+
+.customListingPage .spec-table {
+  margin-top: 5px;
+}
+
+.customListingPage .spec-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #F3F3F3;
+}
+
+.customListingPage .spec-key {
+  font-weight: 600;
+  color: #333;
+  width: 45%;
+}
+
+.customListingPage .spec-value {
+  width: 55%;
+  text-align: right;
+  color: #111;
+}
+
+/* =========================
+   RULES
+========================= */
+
+.customListingPage .accordion .accordionBody p {
+  margin-bottom: 8px;
+  line-height: 1.6;
+}
+
+/* =========================
+   ORDER PANEL FIX
+========================= */
+
+.customListingPage .orderPanelSection {
+  margin-top: 20px;
+  position: relative;
+}
+
+/* =========================
+   MOBILE FIX
+========================= */
+
+@media (max-width: 768px) {
+  .prodcutdetails {
+    flex-direction: column;
+  }
+
+  .leftmedia,
+  .rightsectiondetails {
+    width: 100%;
+  }
+
+  .customListingPage .orderPanelSection {
+    position: relative;
+    top: 0;
+  }
 }
 /* MOBILE */
 @media (max-width: 768px) {

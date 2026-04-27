@@ -1,9 +1,11 @@
+import { Link } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import logo from "../assets/logo.png";
 import searchIcon from "../assets/search.png";
 import { createInstance } from "sharetribe-flex-sdk";
 import { useHistory } from "react-router-dom";
 import "./Header.css";
+import NamedLink from './NamedLink/NamedLink';
 
 const sdk = createInstance({
   clientId: process.env.REACT_APP_SHARETRIBE_SDK_CLIENT_ID,
@@ -81,8 +83,12 @@ const Header = () => {
           </div>
 
           <div className="auth">
-            <button className="btn-outline">Sign in</button>
-            <button className="btn-primary">Register</button>
+            
+
+            <button className="btn-outline"><a href="/login">Sign in</a></button>
+            <button className="btn-primary"><Link to="/l/new" className="btn-primary">
+              List a Rental
+            </Link></button>
           </div>
         </div>
 

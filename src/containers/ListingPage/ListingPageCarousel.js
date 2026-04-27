@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -102,6 +103,12 @@ const { UUID } = sdkTypes;
 export const ListingPageComponent = props => {
    
   const [quantity, setQuantity] = useState(1);
+
+  const [activeTab, setActiveTab] = useState(null);
+
+    const toggleTab = tab => {
+      setActiveTab(prev => (prev === tab ? null : tab));
+    };
 
   const [inquiryModalOpen, setInquiryModalOpen] = useState(
     props.inquiryModalOpenForListingId === props.params.id
@@ -428,8 +435,13 @@ const handleOrderSubmit = values => {
                     </div>
                  
                   <h2 className="productPrice">
-                    {price ? `${price.amount / 100 * quantity} ${price.currency}` : formattedPrice}
-                  </h2>
+                  {price
+                    ? new Intl.NumberFormat('en-US', {
+                        style: 'currency',
+                        currency: price.currency,
+                      }).format((price.amount / 100) * quantity)
+                    : formattedPrice}
+                </h2>
                   {/* ✅ QUANTITY UI */}
                     <div className="quantityBox">
                       <label>Quantity</label>
@@ -458,7 +470,7 @@ const handleOrderSubmit = values => {
                 </H3>
               )}
             </div>
-            {showDescription && <SectionText text={description} showAsIngress />}
+
            <div className={`${css.orderColumnForProductLayout} orderPanelSection`}>
             <OrderPanel
               className={classNames(css.productOrderPanel, {
@@ -467,24 +479,11 @@ const handleOrderSubmit = values => {
               listing={currentListing}
               isOwnListing={isOwnListing}
               onSubmit={handleOrderSubmit}
-              authorLink={
-                <NamedLink
-                  className={css.authorNameLink}
-                  name={isVariant ? 'ListingPageVariant' : 'ListingPage'}
-                  params={params}
-                  to={{ hash: '#author' }}
-                >
-                  {authorDisplayName}
-                </NamedLink>
-              }
-              title={<FormattedMessage id="ListingPage.orderTitle" values={{ title: richTitle }} />}
-              titleDesktop={
-                <H4 as="h1" className={css.orderPanelTitle}>
-                  <FormattedMessage id="ListingPage.orderTitle"values={{ title: richTitle }} />
-                </H4>
-              }
+              authorLink={null}
+              title={null}
+              titleDesktop={null}
               payoutDetailsWarning={payoutDetailsWarning}
-              author={ensuredAuthor}
+            //  author={ensuredAuthor}
               onManageDisableScrolling={onManageDisableScrolling}
               onContactUser={onContactUser}
               {...restOfProps}
@@ -495,12 +494,6 @@ const handleOrderSubmit = values => {
               showListingImage={showListingImage}
             />
           </div>
-            <ul>
-              {(publicData?.includes || []).map((item, i) => (
-                <li key={i}>{item}</li>
-              ))}
-            </ul>
-        
           {descriptionList.length > 0 && (
             <div className={css.descriptionSection}>
               <h3>Listing description</h3>
@@ -512,14 +505,102 @@ const handleOrderSubmit = values => {
             </div>
           )}
 
+           <div className="accordion">
 
-            <CustomListingFields
+              {/* INCLUDES */}
+              {publicData?.includes && (
+                <div className={`item ${activeTab === "includes" ? "active" : ""}`}>
+                  
+                  <div className="header" onClick={() => toggleTab("includes")}>
+                    Includes
+                  </div>
+
+                  {activeTab === "includes" && (
+                    <div className="accordionBody">
+                      <ul>
+                        {(Array.isArray(publicData.includes)
+                          ? publicData.includes
+                          : publicData.includes.split("\n")
+                        )
+                          .filter(item => item.trim() !== "")
+                          .map((item, idx) => (
+                            <li key={idx}>{item}</li>
+                          ))}
+                      </ul>
+                    </div>
+                  )}
+                  
+                </div>
+              )}
+
+              {/* SPECS (TABLE STYLE) */}
+              {publicData?.specs && (
+                <div className="item">
+                  <div className="header" onClick={() => toggleTab("specs")}>
+                    Specs
+                  </div>
+
+                  {activeTab === "specs" && (
+                    <div className="body">
+                      <div className="spec-table">
+                        {publicData.specs.split("\n").map((row, i) => {
+                          const parts = row.split(":");
+                          return (
+                            <div className="spec-row" key={i}>
+                              <div className="spec-key">{parts[0]}</div>
+                              <div className="spec-value">{parts[1]}</div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* RULES */}
+              {(publicData?.cancellation_policy ||
+                publicData?.cleaning_expectations ||
+                publicData?.damage_responsibility ||
+                publicData?.late_return_policy) && (
+                <div className="item">
+                  <div className="header" onClick={() => toggleTab("rules")}>
+                    Rules & Policies
+                  </div>
+
+                  {activeTab === "rules" && (
+                    <div className="body">
+
+                      {publicData.cancellation_policy && (
+                        <p><b>Cancellation:</b> {publicData.cancellation_policy}</p>
+                      )}
+
+                      {publicData.cleaning_expectations && (
+                        <p><b>Cleaning:</b> {publicData.cleaning_expectations}</p>
+                      )}
+
+                      {publicData.damage_responsibility && (
+                        <p><b>Damage:</b> {publicData.damage_responsibility}</p>
+                      )}
+
+                      {publicData.late_return_policy && (
+                        <p><b>Late Return:</b> {publicData.late_return_policy}</p>
+                      )}
+
+                    </div>
+                  )}
+                </div>
+              )}
+
+            </div>
+          {/* <CustomListingFields
               publicData={publicData}
               metadata={metadata}
               listingFieldConfigs={listingConfig.listingFields}
               categoryConfiguration={config.categoryConfiguration}
               intl={intl}
             />
+            */}
 
             <SectionMapMaybe
               geolocation={geolocation}
