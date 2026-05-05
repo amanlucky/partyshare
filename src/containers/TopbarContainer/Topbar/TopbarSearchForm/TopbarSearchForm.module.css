@@ -84,6 +84,7 @@
   border: none;
   padding-top: 0;
   padding-bottom: 0;
+  padding-left:10px;
 
   /* Search text gets ellipsis if it's too wide */
   text-overflow: ellipsis;
@@ -172,6 +173,7 @@
 }
 
 .searchSubmit {
+  display:none;
   position: relative;
   border: 0;
   padding: 0;

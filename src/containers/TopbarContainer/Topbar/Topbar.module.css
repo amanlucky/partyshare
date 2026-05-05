@@ -59,8 +59,8 @@
     height: var(--topbarHeightDesktop);
   }
 
-  @media (--viewportLarge) {
-    display: none;
+  @media (min-width: 1024px) {
+    display: none !important;
   }
 }
 
@@ -161,7 +161,7 @@
 .desktop {
   display: none;
 
-  @media (--viewportLarge) {
+  @media (min-width: 1024px) {
     display: block;
   }
 }
@@ -309,3 +309,4 @@
     margin: 0;
   }
 }
+

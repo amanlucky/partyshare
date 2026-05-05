@@ -345,7 +345,9 @@ const TopbarComponent = props => {
         onLogout={handleLogout}
         currentPage={resolvedCurrentPage}
       />
-      <nav className={classNames(mobileRootClassName || css.container, mobileClassName)}>
+      <nav className={classNames(mobileRootClassName || css.container, mobileClassName, "asm"
+        
+      )}>
         <Button
           id={MOBILE_MENU_BUTTON_ID}
           rootClassName={css.menu}

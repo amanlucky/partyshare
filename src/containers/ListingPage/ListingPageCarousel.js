@@ -494,19 +494,29 @@ const handleOrderSubmit = values => {
               showListingImage={showListingImage}
             />
           </div>
-          {descriptionList.length > 0 && (
-            <div className={css.descriptionSection}>
-              <h3>Listing description</h3>
-              <ul>
-                {descriptionList.map((item, index) => (
-                  <li key={index}>{item}</li>
-                ))}
-              </ul>
-            </div>
-          )}
+
 
            <div className="accordion">
+                    {/* DESCRIPTION */}
+                    {descriptionList.length > 0 && (
+                      <div className={`item ${activeTab === "description" ? "active" : ""}`}>
+                        
+                        <div className="header" onClick={() => toggleTab("description")}>
+                          Listing Description
+                        </div>
 
+                        {activeTab === "description" && (
+                          <div className="accordionBody">
+                            <ul>
+                              {descriptionList.map((item, index) => (
+                                <li key={index}>{item}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                      </div>
+                    )}
               {/* INCLUDES */}
               {publicData?.includes && (
                 <div className={`item ${activeTab === "includes" ? "active" : ""}`}>
@@ -600,7 +610,7 @@ const handleOrderSubmit = values => {
               categoryConfiguration={config.categoryConfiguration}
               intl={intl}
             />
-            */}
+            
 
             <SectionMapMaybe
               geolocation={geolocation}
@@ -608,6 +618,7 @@ const handleOrderSubmit = values => {
               listingId={currentListing.id}
               mapsConfig={config.maps}
             />
+            */}
             <SectionReviews reviews={reviews} fetchReviewsError={fetchReviewsError} />
             <SectionAuthorMaybe
               title={title}
