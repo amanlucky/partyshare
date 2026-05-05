@@ -20,6 +20,9 @@ body {
   font-weight: bold;
   font-size: 20px;
 }
+.logo img {
+    width: 175px;
+}
 .search input {
   padding: 8px 15px;
   width: 250px;

@@ -55,7 +55,7 @@ const InboxLink = ({ notificationCount, inboxTab }) => {
     </NamedLink>
   );
 };
-
+console.log("DESKTOP HEADER LOADED");
 const ProfileMenu = ({ currentPage, currentUser, onLogout, showManageListingsLink, intl }) => {
   const currentPageClass = page => {
     const isAccountSettingsPage =
@@ -200,32 +200,110 @@ const TopbarDesktop = props => {
   );
 
   return (
-    <nav
-      className={classes}
-      aria-label={intl.formatMessage({ id: 'TopbarDesktop.screenreader.topbarNavigation' })}
-    >
-      <LinkedLogo
-        id="logo-topbar-desktop"
-        className={css.logoLink}
-        layout="desktop"
-        alt={intl.formatMessage({ id: 'TopbarDesktop.logo' }, { marketplaceName })}
-        linkToExternalSite={config?.topbar?.logoLink}
-      />
-      {searchFormMaybe}
+    <nav className={classes}>
 
-      <CustomLinksMenu
-        currentPage={currentPage}
-        customLinks={customLinks}
-        intl={intl}
-        hasClientSideContentReady={authenticatedOnClientSide || !isAuthenticatedOrJustHydrated}
-        showCreateListingsLink={showCreateListingsLink}
-      />
+  {/* LEFT */}
+<div className={css.left}>
+  <a href="/">
+    <img
+      src="/icons/vendor-logo.png"
+      alt="PartyShare"
+      className={css.logo}
+    />
+  </a>
+</div>
 
-      {inboxLinkMaybe}
-      {profileMenuMaybe}
-      {signupLinkMaybe}
-      {loginLinkMaybe}
-    </nav>
+  {/* CENTER */}
+<div className={css.center}>
+  <div className={css.searchWrapper}>
+<button
+  type="button"
+  className={css.searchBtn}
+  onClick={() => {
+    document.querySelector('form')?.requestSubmit();
+  }}
+>
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  strokeWidth="2.2"
+  strokeLinecap="round"
+  strokeLinejoin="round"
+>
+  <circle cx="11" cy="11" r="8" />
+  <path d="M21 21l-4.3-4.3" />
+</svg>
+    </button>
+    <TopbarSearchForm
+      onSubmit={onSearchSubmit}
+      initialValues={initialSearchFormValues}
+      appConfig={config}
+      className={`${css.searchInput} vendorsearch` }  // 👈 important
+    />
+  </div>
+</div>
+
+  {/* RIGHT */}
+  <div className={css.right}>
+    {isAuthenticated ? (
+      <Menu>
+        <MenuLabel className={css.userMenu}>
+        <div className={`${css.userWrapper} avtar`}>
+
+          <Avatar
+            className={css.avatar}
+            user={currentUser}
+            disableProfileLink
+          />
+
+          <span className={css.username}>
+            Hello, {currentUser?.attributes?.profile?.displayName?.split(' ')[0]}
+          </span>
+
+          <span className={css.arrow}>⌄</span>
+
+        </div>
+      </MenuLabel>
+
+       <MenuContent className={css.dropdown}>
+
+  <MenuItem key="inbox" className={css.dropdownItem}>
+    <NamedLink name="InboxPage" params={{ tab: 'orders' }}>
+      Inbox
+    </NamedLink>
+  </MenuItem>
+
+  <MenuItem key="profile" className={css.dropdownItem}>
+    <NamedLink name="ProfileSettingsPage">
+      Profile Settings
+    </NamedLink>
+  </MenuItem>
+
+  <MenuItem key="account" className={css.dropdownItem}>
+    <NamedLink name="AccountSettingsPage">
+      Account Settings
+    </NamedLink>
+  </MenuItem>
+
+  <MenuItem key="logout" className={classNames(css.dropdownItem, css.logout)}>
+  <InlineTextButton onClick={onLogout}>
+    Logout
+  </InlineTextButton>
+</MenuItem>
+
+</MenuContent>
+      </Menu>
+    ) : (
+      <>
+        {loginLinkMaybe}
+        {signupLinkMaybe}
+      </>
+    )}
+  </div>
+
+</nav>
   );
 };
 

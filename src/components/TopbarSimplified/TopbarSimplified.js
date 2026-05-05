@@ -69,8 +69,10 @@ const TopbarSimplified = props => {
         alt={intl.formatMessage({ id: 'TopbarSimplified.goToLandingPage' })}
         linkToExternalSite={linkToExternalSite}
       />
+
     </nav>
   );
+  
 };
 
 export default TopbarSimplified;
