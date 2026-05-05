@@ -72,7 +72,7 @@
     justify-content: flex-end;
         align-items: center;
 }
-.btn-primary {
+.btn-primaryh {
   background: #ff8801;
   color: #fff;
   border: none;
@@ -80,11 +80,12 @@
   border-radius: 8px;
 }
 
-.btn-outline {
+.btn-outlineh {
   border: 1px solid #ddd;
   background: #fff;
   padding: 10px 15px;
   border-radius: 8px;
+  color:#000000;
 }
 
 /* MOBILE ICONS */
@@ -145,11 +146,11 @@
   inset: 0;
   background: rgba(0,0,0,0.4);
 }
-button.btn-outline a {
+button.btn-outlineh a {
     text-decoration: none;
     color: #000000;
 }
-.btn-primary a {
+.btn-primaryh a {
     font-size: 14px;
 }
 .userMenu {
