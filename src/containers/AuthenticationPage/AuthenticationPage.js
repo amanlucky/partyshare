@@ -245,15 +245,14 @@ export const AuthenticationForms = props => {
     </div>
   );
 
-  const signupErrorMessage = (
-    <div className={css.error}>
-      {isSignupEmailTakenError(signupError) ? (
-        <FormattedMessage id="AuthenticationPage.signupFailedEmailAlreadyTaken" />
-      ) : (
-        <FormattedMessage id="AuthenticationPage.signupFailed" />
-      )}
-    </div>
-  );
+  const signupErrorMessage = signupError ? (
+  <div className={css.error}>
+    {signupError?.errors?.[0]?.detail ||
+     signupError?.errors?.[0]?.title ||
+     signupError?.message ||
+     'Signup failed. Please try again.'}
+  </div>
+) : null;
 
   const loginOrSignupError =
     isLogin && !!idpAuthError
