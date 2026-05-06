@@ -2,7 +2,7 @@ import { combineReducers } from '@reduxjs/toolkit';
 import { logoutThunk } from './ducks/auth.duck';
 import * as globalReducers from './ducks';
 import * as pageReducers from './containers/reducers';
-
+import VendorDashboardReducer from './containers/VendorDashboardPage/VendorDashboardPage.duck';
 /**
  * Function _createReducer_ combines global reducers (reducers that are used in
  * multiple pages) and reducers that are handling actions happening inside one page container.
@@ -10,7 +10,7 @@ import * as pageReducers from './containers/reducers';
  * which is page specific.
  * Future: this structure could take in asyncReducers, which are changed when you navigate pages.
  */
-const appReducer = combineReducers({ ...globalReducers, ...pageReducers });
+const appReducer = combineReducers({ ...globalReducers, ...pageReducers ,   VendorDashboardPage: VendorDashboardReducer, });
 
 const createReducer = () => {
   return (state, action) => {
