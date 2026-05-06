@@ -1,5 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
 import css from './VendorDashboardPage.module.css';
+import {
+  fetchOwnListings,
+  publishListing,
+  closeListing,
+  openListing,
+} from './VendorDashboardPage.duck';
 
 const menuItems = [
   'Overview',
@@ -99,32 +106,7 @@ const vendorBookings = [
     delivery: 'Delivery',
   },
 ];
-const inventoryItems = [
-  {
-    id: 1,
-    title: 'Luxury Wedding Tent',
-    category: 'Tents',
-    price: '$450/day',
-    quantity: 3,
-    status: 'Active',
-  },
-  {
-    id: 2,
-    title: 'LED Dance Floor',
-    category: 'Lighting',
-    price: '$280/day',
-    quantity: 5,
-    status: 'Draft',
-  },
-  {
-    id: 3,
-    title: 'Gold Chiavari Chairs',
-    category: 'Furniture',
-    price: '$12/chair',
-    quantity: 150,
-    status: 'Active',
-  },
-];
+
 const payoutTransactions = [
   {
     id: 'PAYOUT-1024',
@@ -204,31 +186,102 @@ const activeMessages = [
     time: '10:24 AM',
   },
 ];
-const VendorDashboardPage = () => {
+const VendorDashboardPage = props => {
+
+const {
+  currentUser,
+  inventoryItems,
+  loadingListings,
+  fetchOwnListings,
+  publishListing,
+  closeListing,
+  openListing,
+} = props;
 
   const [activePage, setActivePage] = useState('Overview');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [inventoryFilter, setInventoryFilter] =
+   useState('all');
+
+    useEffect(() => {
+    fetchOwnListings();
+  }, []);
+
+const filteredInventoryItems =
+  inventoryItems.filter(item => {
+
+    if (inventoryFilter === 'all') {
+      return true;
+    }
+
+    if (inventoryFilter === 'published') {
+      return item.attributes.state === 'published';
+    }
+
+    if (inventoryFilter === 'draft') {
+      return item.attributes.state === 'draft';
+    }
+
+    if (inventoryFilter === 'closed') {
+      return item.attributes.state === 'closed';
+    }
+
+    return true;
+
+  });
   return (
     <div className={css.dashboardWrapper}>
-
+        {mobileMenuOpen && (
+          <div
+            className={css.mobileOverlay}
+            onClick={() => setMobileMenuOpen(false)}
+          />
+        )}
+      
+      <button
+        className={css.mobileMenuButton}
+        onClick={() => setMobileMenuOpen(true)}
+      >
+        ☰
+      </button>
       {/* SIDEBAR */}
-
-      <aside className={css.sidebar}>
+      <aside className={`${css.sidebar} ${
+        mobileMenuOpen ? css.sidebarOpen : ''
+      }`}>
         <div className={css.logo}>
-          Vendor Dashboard
+          <div className={css.sidebarTop}>
+          <h2>Vendor Dashboard</h2>
+          <button
+            className={css.closeSidebar}
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            ✕
+          </button>
+
+        </div>
         </div>
 
-        <nav className={css.nav}>
+       <nav className={css.nav}>
+
           {menuItems.map(item => (
+
             <div
               key={item}
               className={`${css.navItem} ${
                 activePage === item ? css.activeNavItem : ''
               }`}
-              onClick={() => setActivePage(item)}
+              onClick={() => {
+                setActivePage(item);
+                setMobileMenuOpen(false);
+              }}
             >
+
               {item}
+
             </div>
+
           ))}
+
         </nav>
       </aside>
 
@@ -491,21 +544,53 @@ const VendorDashboardPage = () => {
           <div>
 
             <div className={css.requestTabs}>
-              <button className={css.activeTab}>
-                All Listings
-              </button>
+              <div className={css.inventoryTabs}>
 
-              <button className={css.tabBtn}>
-                Active
-              </button>
+                  <button
+                    className={
+                      inventoryFilter === 'all'
+                        ? css.activeTab
+                        : css.tabBtn
+                    }
+                    onClick={() => setInventoryFilter('all')}
+                  >
+                    All Listings
+                  </button>
 
-              <button className={css.tabBtn}>
-                Draft
-              </button>
+                  <button
+                    className={
+                      inventoryFilter === 'published'
+                        ? css.activeTab
+                        : css.tabBtn
+                    }
+                    onClick={() => setInventoryFilter('published')}
+                  >
+                    Active
+                  </button>
 
-              <button className={css.tabBtn}>
-                Archived
-              </button>
+                  <button
+                    className={
+                      inventoryFilter === 'draft'
+                        ? css.activeTab
+                        : css.tabBtn
+                    }
+                    onClick={() => setInventoryFilter('draft')}
+                  >
+                    Draft
+                  </button>
+
+                  <button
+                    className={
+                      inventoryFilter === 'closed'
+                        ? css.activeTab
+                        : css.tabBtn
+                    }
+                    onClick={() => setInventoryFilter('closed')}
+                  >
+                    Archived
+                  </button>
+
+                </div>
             </div>
 
             <div className={css.tableWrapper}>
@@ -522,49 +607,127 @@ const VendorDashboardPage = () => {
                 </thead>
 
                 <tbody>
-                  {inventoryItems.map(item => (
-                    <tr key={item.id}>
 
-                      <td>{item.title}</td>
-
-                      <td>{item.category}</td>
-
-                      <td>{item.price}</td>
-
-                      <td>{item.quantity}</td>
+                  {loadingListings ? (
+                    <tr>
+                      <td colSpan="6">Loading listings...</td>
+                    </tr>
+                  ) : (
+                  filteredInventoryItems.map(item =>(
+                     <tr key={item.id.uuid}>
 
                       <td>
+                        {item.attributes.title}
+                      </td>
+
+                      <td>
+                        {item.attributes.publicData?.category || 'General'}
+                      </td>
+
+                      <td>
+
+                        {item.attributes.price
+                          ? `$${item.attributes.price.amount / 100}`
+                          : '-'}
+
+                      </td>
+
+                      <td>
+                        {item.attributes.publicData?.quantity || 1}
+                      </td>
+
+                      <td>
+
                         <span
                           className={
-                            item.status === 'Active'
+                            item.attributes.state === 'published'
                               ? css.activeStatus
                               : css.draftStatus
                           }
                         >
-                          {item.status}
+                          {item.attributes.state}
                         </span>
+
                       </td>
 
                       <td>
+
                         <div className={css.actionButtons}>
 
-                          <button className={css.smallBtn}>
-                            Edit
-                          </button>
+                            {item.attributes.state === 'draft' ? (
 
-                          <button className={css.smallBtn}>
-                            View
-                          </button>
+                              <button
+                                className={css.publishBtn}
+                                onClick={() => publishListing(item.id)}
+                              >
+                                Publish
+                              </button>
 
-                          <button className={css.smallBtn}>
-                            Archive
-                          </button>
+                            ) : null}
 
-                        </div>
+                            <button
+                              className={css.smallBtn}
+                              onClick={() => {
+
+                                const slug =
+                                  item.attributes.title
+                                    .replace(/\s+/g, '-')
+                                    .toLowerCase();
+
+                                window.open(
+                                  `/l/${slug}/${item.id.uuid}/edit/details`,
+                                  '_blank'
+                                );
+
+                              }}
+                            >
+                              Edit
+                            </button>
+                            {item.attributes.state === 'published' ? (
+
+                              <button
+                                className={css.archiveBtn}
+                                onClick={() => closeListing(item.id)}
+                              >
+                                Archive
+                              </button>
+
+                            ) : null}
+                            <button
+                              className={css.smallBtn}
+                              onClick={() => {
+
+                                const slug =
+                                  item.attributes.title
+                                    .replace(/\s+/g, '-')
+                                    .toLowerCase();
+
+                                window.open(
+                                  `/l/${slug}/${item.id.uuid}`,
+                                  '_blank'
+                                );
+
+                              }}
+                            >
+                              View
+                            </button>
+                                {item.attributes.state === 'closed' ? (
+
+                                  <button
+                                    className={css.reopenBtn}
+                                    onClick={() => openListing(item.id)}
+                                  >
+                                    Reopen
+                                  </button>
+
+                                ) : null}
+                          </div>
+
                       </td>
 
                     </tr>
-                  ))}
+                  ))
+                  )}
                 </tbody>
               </table>
             </div>
@@ -895,7 +1058,31 @@ const VendorDashboardPage = () => {
 
         {activePage === 'Account Settings' && (
           <div>
+            {/* USER HEADER */}
 
+            <section className={css.section}>
+
+              <div className={css.userHeaderCard}>
+
+                <div className={css.userAvatar}>
+                  {currentUser?.attributes?.profile?.displayName?.charAt(0) || 'U'}
+                </div>
+
+                <div>
+
+                  <h2>
+                    {currentUser?.attributes?.profile?.displayName}
+                  </h2>
+
+                  <p>
+                    {currentUser?.attributes?.email}
+                  </p>
+
+                </div>
+
+              </div>
+
+            </section>
             {/* BUSINESS PROFILE */}
 
             <section className={css.section}>
@@ -913,7 +1100,9 @@ const VendorDashboardPage = () => {
 
                     <input
                       type="text"
-                      defaultValue="PartyShare Rentals"
+                      defaultValue={
+                        currentUser?.attributes?.profile?.displayName || ''
+                      }
                       className={css.formInput}
                     />
                   </div>
@@ -933,7 +1122,9 @@ const VendorDashboardPage = () => {
 
                     <input
                       type="email"
-                      defaultValue="vendor@partyshare.com"
+                      defaultValue={
+                        currentUser?.attributes?.email || ''
+                      }
                       className={css.formInput}
                     />
                   </div>
@@ -1077,4 +1268,35 @@ const VendorDashboardPage = () => {
   );
 };
 
-export default VendorDashboardPage;
+const mapStateToProps = state => ({
+
+  currentUser: state.user.currentUser,
+
+  inventoryItems:
+    state.VendorDashboardPage.listings,
+
+  loadingListings:
+    state.VendorDashboardPage.listingsLoading,
+
+});
+
+const mapDispatchToProps = dispatch => ({
+
+  fetchOwnListings: () =>
+    dispatch(fetchOwnListings()),
+
+  publishListing: listingId =>
+    dispatch(publishListing(listingId)),
+
+  closeListing: listingId =>
+  dispatch(closeListing(listingId)),
+
+  openListing: listingId =>
+  dispatch(openListing(listingId)),
+
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(VendorDashboardPage);
