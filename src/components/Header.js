@@ -164,19 +164,19 @@ const Header = ({ currentUser, isAuthenticated, onLogout }) => {
                 )}
               </div>
             ) : (
-              <Link to="/login" className="btn-outline">
+              <Link to="/login" className="btn-outlineh">
                 Sign in
               </Link>
             )}
 
             {/* CONDITIONAL BUTTON */}
             {isAuthenticated ? (
-              <Link to="/l/new" className="btn-primary">
+              <Link to="/l/new" className="btn-primaryh">
                 List a Rental
               </Link>
             ) : (
-              <Link to="/signup" className="btn-primary">
-                Sign up
+              <Link to="/signup" className="btn-primaryh">
+                Register
               </Link>
             )}
           </div>

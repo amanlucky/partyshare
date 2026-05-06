@@ -34,8 +34,11 @@ body {
   border: 1px solid #ddd;
   padding: 8px 15px;
   background: white;
+  color:#000000;
 }
-
+a.btn-outlineh:hover , a.btn-primaryh:hover {
+    text-decoration: unset;
+}
 /* HERO */
 .hero {
   display: flex;

@@ -104,8 +104,8 @@
 
   &:hover {
     color: var(--colorBlack);
-    border-bottom: 4px solid var(--marketplaceColor);
-    border-radius: 0;
+  /*  border-bottom: 4px solid var(--marketplaceColor);
+    border-radius: 0;*/
     text-decoration: none;
   }
 
@@ -114,13 +114,32 @@
     margin: 0;
   }
 }
-
+.topbarLink:global(.NamedLink_active) .topbarLinkLabel{
+    background: #ff8801;
+    border: none;
+    color: #fff;
+        font-family: Inter, sans-serif;
+    font-size: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    padding: 12px 22px;
+}
 .topbarLinkLabel {
   composes: textSmall from global;
   display: inline-block;
   margin: 28px 0;
-  text-decoration: inherit;
+  text-decoration: unset;
   position: relative;
+  background: #ffffff;
+    border: none;
+    color: #000000;
+    font-family: Inter, sans-serif;
+    font-size: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    padding: 12px 22px;
+        padding: 12px 22px;
+    border: 1px solid #d9d3d3;
 }
 
 .notificationDot {

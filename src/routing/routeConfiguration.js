@@ -4,7 +4,7 @@ import getPageDataLoadingAPI from '../containers/pageDataLoadingAPI';
 import NotFoundPage from '../containers/NotFoundPage/NotFoundPage';
 import PreviewResolverPage from '../containers/PreviewResolverPage/PreviewResolverPage';
 import CategoryPage from "../containers/CategoryPage";
-
+import VendorDashboardPage from '../containers/VendorDashboardPage/VendorDashboardPage';
 // routeConfiguration needs to initialize containers first
 // Otherwise, components will import form container eventually and
 // at that point css bundling / imports will happen in wrong order.
@@ -218,7 +218,13 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
       authPage: 'LoginPage',
       component: ProfileSettingsPage,
     },
-
+    {
+      path: '/vendor-dashboard',
+      name: 'VendorDashboardPage',
+      auth: true,
+      authPage: 'LoginPage',
+      component: VendorDashboardPage,
+    },
     // Note: authenticating with IdP (e.g. Facebook) expects that /login path exists
     // so that in the error case users can be redirected back to the LoginPage
     // In case you change this, remember to update the route in server/api/auth/loginWithIdp.js
