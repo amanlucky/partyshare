@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
+import sdk from '../../util/sdk';
 import css from './VendorDashboardPage.module.css';
 import {
   fetchOwnListings,
+  fetchBookings,
   publishListing,
   closeListing,
   openListing,
@@ -19,64 +21,6 @@ const menuItems = [
   'Account Settings',
 ];
 
-const bookingRequests = [
-  {
-    id: 1,
-    renter: 'John Smith',
-    item: 'Luxury Wedding Tent',
-    dates: 'May 10 - May 12',
-    amount: '$450',
-    status: 'Pending',
-  },
-  {
-    id: 2,
-    renter: 'Sarah Johnson',
-    item: 'LED Dance Floor',
-    dates: 'May 15 - May 16',
-    amount: '$280',
-    status: 'Pending',
-  },
-];
-
-const summaryCards = [
-  {
-    title: 'New Booking Requests',
-    value: '12',
-  },
-  {
-    title: 'Upcoming Bookings',
-    value: '28',
-  },
-  {
-    title: 'Unread Messages',
-    value: '7',
-  },
-  {
-    title: 'Active Listings',
-    value: '42',
-  },
-  {
-    title: 'Monthly Earnings',
-    value: '$4,850',
-  },
-];
-
-const latestBookings = [
-  {
-    id: 1,
-    item: 'Wedding Tent Package',
-    renter: 'Michael Lee',
-    date: 'May 20',
-    amount: '$650',
-  },
-  {
-    id: 2,
-    item: 'Gold Chiavari Chairs',
-    renter: 'Emma Watson',
-    date: 'May 22',
-    amount: '$320',
-  },
-];
 const vendorBookings = [
   {
     id: 1,
@@ -107,26 +51,7 @@ const vendorBookings = [
   },
 ];
 
-const payoutTransactions = [
-  {
-    id: 'PAYOUT-1024',
-    renter: 'Michael Lee',
-    date: 'May 20',
-    amount: '$650',
-    fees: '$65',
-    net: '$585',
-    status: 'Paid',
-  },
-  {
-    id: 'PAYOUT-1025',
-    renter: 'Emma Watson',
-    date: 'May 22',
-    amount: '$320',
-    fees: '$32',
-    net: '$288',
-    status: 'Pending',
-  },
-];
+
 const reviews = [
   {
     id: 1,
@@ -190,22 +115,76 @@ const VendorDashboardPage = props => {
 
 const {
   currentUser,
+
   inventoryItems,
   loadingListings,
+
+  bookings,
+  bookingsLoading,
+
   fetchOwnListings,
+  fetchBookings,
+
   publishListing,
   closeListing,
   openListing,
+
 } = props;
 
   const [activePage, setActivePage] = useState('Overview');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [bookingFilter, setBookingFilter] =
+  useState('all');
+  const [bookingSearch, setBookingSearch] =
+  useState('');
+  const [sortBy, setSortBy] =
+  useState('newest');
+  const [requestFilter, setRequestFilter] =
+  useState('pending');
+  const [currentPage, setCurrentPage] =
+  useState(1);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [bookingFilter, bookingSearch]);
+  const bookingsPerPage = 10;
+  const [loadingBookings, setLoadingBookings] =
+  useState(false);
+  const [selectedBooking, setSelectedBooking] =
+  useState(null);
   const [inventoryFilter, setInventoryFilter] =
    useState('all');
 
-    useEffect(() => {
-    fetchOwnListings();
-  }, []);
+  useEffect(() => {
+
+  const loadData = async () => {
+
+    setLoadingBookings(true);
+
+    await fetchOwnListings();
+
+    await fetchBookings();
+
+    setLoadingBookings(false);
+
+  };
+
+  loadData();
+
+}, []);
+
+useEffect(() => {
+window.bookings = bookings;
+  if (bookings.length) {
+
+    console.log(
+      'BOOKINGS DATA:',
+      bookings
+    );
+
+  }
+
+}, [bookings]);
 
 const filteredInventoryItems =
   inventoryItems.filter(item => {
@@ -229,6 +208,288 @@ const filteredInventoryItems =
     return true;
 
   });
+  const grossRevenue = bookings.reduce(
+  (total, booking) => {
+
+    const amount =
+      booking.attributes?.payinTotal?.amount || 0;
+
+    return total + amount;
+
+  },
+  0
+);
+
+const netPayouts = bookings.reduce(
+  (total, booking) => {
+
+    const amount =
+      booking.attributes?.payoutTotal?.amount || 0;
+
+    return total + amount;
+
+  },
+  0
+);
+
+const pendingPayouts = bookings
+  .filter(booking =>
+    booking.attributes?.lastTransition !==
+    'transition/complete'
+  )
+  .reduce((total, booking) => {
+
+    const amount =
+      booking.attributes?.payoutTotal?.amount || 0;
+
+    return total + amount;
+
+  }, 0);
+const upcomingCount = bookings.filter(
+  booking =>
+    booking.attributes.state ===
+      'state/preauthorized' ||
+    booking.attributes.state ===
+      'state/accepted'
+).length;
+
+const completedCount = bookings.filter(
+  booking =>
+    booking.attributes.state ===
+    'state/delivered'
+).length;
+
+const cancelledCount = bookings.filter(
+  booking =>
+    booking.attributes.state ===
+      'state/cancelled' ||
+    booking.attributes.state ===
+      'state/expired'
+).length;
+
+const pendingCount = bookings.filter(
+  booking =>
+    booking.attributes.state ===
+    'state/preauthorized'
+).length;
+
+const approvedCount = bookings.filter(
+  booking =>
+    booking.attributes.state ===
+    'state/accepted'
+).length;
+
+const rejectedCount = bookings.filter(
+  booking =>
+    booking.attributes.state ===
+    'state/declined'
+).length;
+
+const bookingRequests = bookings.filter(
+  booking => {
+
+    if (requestFilter === 'pending') {
+
+      return (
+        booking.attributes.state ===
+        'state/preauthorized'
+      );
+
+    }
+
+    if (requestFilter === 'approved') {
+
+      return (
+        booking.attributes.state ===
+        'state/accepted'
+      );
+
+    }
+
+if (requestFilter === 'rejected') {
+
+  return (
+    booking.attributes.state ===
+    'state/declined'
+  );
+
+}
+
+    return true;
+
+  }
+);
+const pendingRequestsCount =
+  bookings.filter(
+    booking =>
+      booking.attributes.state ===
+      'state/preauthorized'
+  ).length;
+
+const upcomingBookingsCount =
+  bookings.filter(
+    booking =>
+      booking.attributes.state ===
+      'state/accepted'
+  ).length;
+
+const activeListingsCount =
+  inventoryItems.filter(
+    item =>
+      item.attributes.state ===
+      'published'
+  ).length;
+
+const monthlyEarnings =
+  bookings.reduce((total, booking) => {
+
+    return (
+      total +
+      (booking.attributes?.payinTotal
+        ?.amount || 0)
+    );
+
+  }, 0) / 100;
+const summaryCards = [
+  {
+    title: 'New Booking Requests',
+    value: pendingRequestsCount,
+  },
+  {
+    title: 'Upcoming Bookings',
+    value: upcomingBookingsCount,
+  },
+  {
+    title: 'Unread Messages',
+    value: conversations.filter(
+      c => c.unread
+    ).length,
+  },
+  {
+    title: 'Active Listings',
+    value: activeListingsCount,
+  },
+  {
+    title: 'Monthly Earnings',
+    value: `$${monthlyEarnings}`,
+  },
+];
+
+const filteredBookings = bookings.filter(booking => {
+
+  const state = booking.attributes.state;
+
+  const customerName =
+    booking.customer?.attributes?.profile
+      ?.displayName?.toLowerCase() || '';
+
+  const listingTitle =
+    booking.listing?.attributes?.title
+      ?.toLowerCase() || '';
+
+  const searchValue =
+    bookingSearch.toLowerCase();
+
+  const matchesSearch =
+    customerName.includes(searchValue) ||
+    listingTitle.includes(searchValue);
+
+  if (!matchesSearch) {
+    return false;
+  }
+
+  if (bookingFilter === 'all') {
+    return true;
+  }
+
+  if (bookingFilter === 'upcoming') {
+    return (
+      state === 'state/preauthorized' ||
+      state === 'state/accepted'
+    );
+  }
+
+  if (bookingFilter === 'completed') {
+    return state === 'state/delivered';
+  }
+
+  if (bookingFilter === 'cancelled') {
+    return (
+      state === 'state/cancelled' ||
+      state === 'state/expired'
+    );
+  }
+
+  return true;
+
+});
+const sortedBookings = [
+  ...filteredBookings,
+].sort((a, b) => {
+
+  if (sortBy === 'newest') {
+
+    return (
+      new Date(
+        b.attributes.createdAt
+      ) -
+      new Date(
+        a.attributes.createdAt
+      )
+    );
+
+  }
+
+  if (sortBy === 'oldest') {
+
+    return (
+      new Date(
+        a.attributes.createdAt
+      ) -
+      new Date(
+        b.attributes.createdAt
+      )
+    );
+
+  }
+
+  if (sortBy === 'highest') {
+
+    return (
+      b.attributes.payinTotal.amount -
+      a.attributes.payinTotal.amount
+    );
+
+  }
+
+  if (sortBy === 'lowest') {
+
+    return (
+      a.attributes.payinTotal.amount -
+      b.attributes.payinTotal.amount
+    );
+
+  }
+
+  return 0;
+
+});
+const indexOfLastBooking =
+  currentPage * bookingsPerPage;
+
+const indexOfFirstBooking =
+  indexOfLastBooking - bookingsPerPage;
+
+const currentBookings =
+  sortedBookings.slice(
+    indexOfFirstBooking,
+    indexOfLastBooking
+  );
+
+const totalPages = Math.ceil(
+  sortedBookings.length / bookingsPerPage
+);
+
   return (
     <div className={css.dashboardWrapper}>
         {mobileMenuOpen && (
@@ -307,32 +568,107 @@ const filteredInventoryItems =
 
               <div className={css.bookingGrid}>
                 {bookingRequests.map(request => (
-                  <div key={request.id} className={css.bookingCard}>
+                   <div key={request.id.uuid} className={css.bookingCard}>
 
                     <div className={css.bookingTop}>
-                      <h3>{request.item}</h3>
+                      <h3>
+                        {
+                          request.listing?.attributes?.title
+                          || 'Listing'
+                        }
+                      </h3>
 
                       <span className={css.status}>
-                        {request.status}
+                        {
+                          request.customer?.attributes
+                            ?.profile?.displayName
+                            || 'Customer'
+                        }
                       </span>
                     </div>
 
-                    <p><strong>Renter:</strong> {request.renter}</p>
-                    <p><strong>Dates:</strong> {request.dates}</p>
-                    <p><strong>Total:</strong> {request.amount}</p>
+                    <p><strong>Renter:</strong>{
+                      request.customer?.attributes
+                        ?.profile?.displayName
+                        || 'Customer'
+                    }</p>
+                   <p><strong>Dates:</strong> 
+                        {
+                          request.attributes?.createdAt
+                        ? new Date(
+                            request.attributes.createdAt
+                          ).toLocaleDateString()
+                        : '-'
+                        }
+                      </p>
+                    <p><strong>Total:</strong>{
+                          request.attributes?.payinTotal
+                            ? `$${request.attributes.payinTotal.amount / 100}`
+                            : '-'
+                        }</p>
 
                     <div className={css.buttonRow}>
-                      <button className={css.approveBtn}>
-                        Approve
-                      </button>
+                      <button
+                          className={css.approveBtn}
+                          onClick={async () => {
 
-                      <button className={css.rejectBtn}>
-                        Reject
-                      </button>
+                            try {
+
+                              await sdk.transactions.transition({
+                                id: request.id,
+                                transition: 'transition/accept',
+                                params: {},
+                              });
+
+                              await fetchBookings();
+
+                              alert('Booking accepted');
+
+                            } catch (e) {
+
+                              console.log(e);
+
+                            }
+
+                          }}
+                        >
+                          Approve
+                        </button>
+
+                       <button
+                          className={css.rejectBtn}
+                          onClick={async () => {
+
+                            try {
+
+                              await sdk.transactions.transition({
+                                id: request.id,
+                                transition: 'transition/decline',
+                                params: {},
+                              });
+
+                              await fetchBookings();
+
+                              alert('Booking declined');
+
+                            } catch (e) {
+
+                              console.log(e);
+
+                              alert(JSON.stringify(e.data));
+
+                            }
+
+                          }}
+                        >
+                          Reject
+                        </button>
                     </div>
 
                   </div>
-                ))}
+                ))
+                
+                }
               </div>
             </section>
 
@@ -366,12 +702,35 @@ const filteredInventoryItems =
                   </thead>
 
                   <tbody>
-                    {latestBookings.map(booking => (
-                      <tr key={booking.id}>
-                        <td>{booking.item}</td>
-                        <td>{booking.renter}</td>
-                        <td>{booking.date}</td>
-                        <td>{booking.amount}</td>
+                    {bookings.slice(0, 5).map(booking => (
+                      <tr key={booking.id.uuid}>
+                        <td>
+                          {
+                            booking.listing?.attributes?.title
+                            || 'Listing'
+                          }
+                        </td>
+                        <td>
+                          {
+                            booking.customer?.attributes
+                              ?.profile?.displayName
+                              || 'Customer'
+                          }
+                        </td>
+                        <td>
+                          {
+                            new Date(
+                              booking.attributes.createdAt
+                            ).toLocaleDateString()
+                          }
+                        </td>
+                        <td>
+                            {
+                              booking.attributes?.payinTotal
+                                ? `$${booking.attributes.payinTotal.amount / 100}`
+                                : '-'
+                            }
+                          </td>
                       </tr>
                     ))}
                   </tbody>
@@ -388,51 +747,191 @@ const filteredInventoryItems =
           <div>
 
             <div className={css.requestTabs}>
-              <button className={css.activeTab}>
-                Pending
-              </button>
+              <button
+                  className={
+                    requestFilter === 'pending'
+                      ? css.activeTab
+                      : css.tabBtn
+                  }
+                  onClick={() =>
+                    setRequestFilter('pending')
+                  }
+                >
+                  Pending ({pendingCount})
+                </button>
 
-              <button className={css.tabBtn}>
-                Approved
-              </button>
+                <button
+                  className={
+                    requestFilter === 'approved'
+                      ? css.activeTab
+                      : css.tabBtn
+                  }
+                  onClick={() =>
+                    setRequestFilter('approved')
+                  }
+                >
+                  Approved ({approvedCount})
+                </button>
 
-              <button className={css.tabBtn}>
-                Rejected
-              </button>
+                <button
+                  className={
+                    requestFilter === 'rejected'
+                      ? css.activeTab
+                      : css.tabBtn
+                  }
+                  onClick={() =>
+                    setRequestFilter('rejected')
+                  }
+                >
+                  Rejected ({rejectedCount})
+                </button>
             </div>
 
             <div className={css.bookingGrid}>
-              {bookingRequests.map(request => (
-                <div key={request.id} className={css.bookingCard}>
+              {bookingRequests.length === 0 ? (
+
+              <div className={css.emptyState}>
+                No {requestFilter} requests
+              </div>
+
+            ) : (
+
+              bookingRequests.map(request => (
+                
+                <div key={request.id.uuid} className={css.bookingCard}>
 
                   <div className={css.bookingTop}>
-                    <h3>{request.item}</h3>
 
-                    <span className={css.status}>
-                      {request.status}
-                    </span>
-                  </div>
+                  <h3>
+                    {
+                      request.listing?.attributes?.title
+                      || 'Listing'
+                    }
+                  </h3>
 
-                  <p><strong>Renter:</strong> {request.renter}</p>
-                  <p><strong>Dates:</strong> {request.dates}</p>
-                  <p><strong>Total:</strong> {request.amount}</p>
+                  <span className={css.status}>
+
+                    {request.attributes.state === 'state/preauthorized' &&
+                      'Pending'}
+
+                    {request.attributes.state === 'state/accepted' &&
+                      'Approved'}
+
+                    {request.attributes.state === 'state/declined' &&
+                      'Rejected'}
+
+                    {request.attributes.state === 'state/expired' &&
+                      'Expired'}
+
+                  </span>
+
+                </div>
+
+                <p>
+                  <strong>Renter:</strong>{' '}
+                  {
+                    request.customer?.attributes
+                      ?.profile?.displayName
+                      || 'Customer'
+                  }
+                </p>
+
+                <p>
+                  <strong>Dates:</strong>{' '}
+                  {
+                    request.attributes?.createdAt
+                      ? new Date(
+                          request.attributes.createdAt
+                        ).toLocaleDateString()
+                      : '-'
+                  }
+                </p>
+
+                <p>
+                  <strong>Total:</strong>{' '}
+                  {
+                    request.attributes?.payinTotal
+                      ? `$${request.attributes.payinTotal.amount / 100}`
+                      : '-'
+                  }
+                </p>
 
                   <div className={css.buttonRow}>
-                    <button className={css.approveBtn}>
-                      Approve
-                    </button>
 
-                    <button className={css.rejectBtn}>
-                      Reject
-                    </button>
+                    {request.attributes.state ===
+                      'state/preauthorized' && (
+                      <>
+                        <button
+                          className={css.approveBtn}
+                          onClick={async () => {
+
+                            try {
+
+                              await sdk.transactions.transition({
+                                id: request.id,
+                                transition: 'transition/accept',
+                                params: {},
+                              });
+
+                              await fetchBookings();
+
+                              alert('Booking accepted');
+
+                            } catch (e) {
+
+                              console.log(e);
+
+                              alert('Accept failed');
+
+                            }
+
+                          }}
+                        >
+                          Approve
+                        </button>
+
+                        <button
+                            className={css.rejectBtn}
+                            onClick={async () => {
+
+                              try {
+
+                                await sdk.transactions.transition({
+                                  id: request.id,
+                                  transition: 'transition/decline',
+                                  params: {},
+                                });
+
+                                await fetchBookings();
+
+                                alert('Booking rejected');
+
+                              } catch (e) {
+
+                                console.log(e);
+
+                                alert(
+                                  'Reject transition not configured yet'
+                                );
+
+                              }
+
+                            }}
+                          >
+                            Reject
+                          </button>
+                      </>
+                    )}
 
                     <button className={css.secondaryBtn}>
                       Message
                     </button>
+
                   </div>
 
                 </div>
-              ))}
+
+              )))}
             </div>
 
           </div>
@@ -441,30 +940,107 @@ const filteredInventoryItems =
 
         {activePage === 'Bookings' && (
           <div>
+                <input
+                      type="text"
+                      placeholder="Search bookings..."
+                      value={bookingSearch}
+                      onChange={e =>
+                        setBookingSearch(e.target.value)
+                      }
+                      className={css.searchInput}
+                    />
+                    <select
+                        value={sortBy}
+                        onChange={e =>
+                          setSortBy(e.target.value)
+                        }
+                        className={css.sortSelect}
+                      >
 
-            <div className={css.requestTabs}>
+                        <option value="newest">
+                          Newest
+                        </option>
 
-              <button className={css.activeTab}>
-                All Bookings
-              </button>
+                        <option value="oldest">
+                          Oldest
+                        </option>
 
-              <button className={css.tabBtn}>
-                Upcoming
-              </button>
+                        <option value="highest">
+                          Highest Amount
+                        </option>
 
-              <button className={css.tabBtn}>
-                Completed
-              </button>
+                        <option value="lowest">
+                          Lowest Amount
+                        </option>
 
-              <button className={css.tabBtn}>
-                Cancelled
-              </button>
+                      </select>
+                  <div className={css.filterButtons}>
 
-            </div>
+                    <button
+                      className={`${css.filterBtn} ${
+                        bookingFilter === 'all'
+                          ? css.activeFilterBtn
+                          : ''
+                      }`}
+                      onClick={() =>
+                        setBookingFilter('all')
+                      }
+                    >
+                      All Bookings ({bookings.length})
+                    </button>
+
+                    <button
+                      className={`${css.filterBtn} ${
+                        bookingFilter === 'upcoming'
+                          ? css.activeFilterBtn
+                          : ''
+                      }`}
+                      onClick={() =>
+                        setBookingFilter('upcoming')
+                      }
+                    >
+                      Upcoming ({upcomingCount})
+                    </button>
+
+                    <button
+                      className={`${css.filterBtn} ${
+                        bookingFilter === 'completed'
+                          ? css.activeFilterBtn
+                          : ''
+                      }`}
+                      onClick={() =>
+                        setBookingFilter('completed')
+                      }
+                    >
+                      Completed ({completedCount})
+                    </button>
+
+                    <button
+                      className={`${css.filterBtn} ${
+                        bookingFilter === 'cancelled'
+                          ? css.activeFilterBtn
+                          : ''
+                      }`}
+                      onClick={() =>
+                        setBookingFilter('cancelled')
+                      }
+                    >
+                      Cancelled ({cancelledCount})
+                    </button>
+
+                  </div>
 
             <div className={css.tableWrapper}>
 
-              <table className={css.table}>
+              {loadingBookings ? (
+
+                <div className={css.loadingText}>
+                  Loading bookings...
+                </div>
+
+              ) : (
+  <>
+                <table className={css.table}>
 
                 <thead>
                   <tr>
@@ -478,64 +1054,402 @@ const filteredInventoryItems =
                   </tr>
                 </thead>
 
-                <tbody>
+               <tbody>
 
-                  {vendorBookings.map(booking => (
-                    <tr key={booking.id}>
+                  {currentBookings.length === 0 ? (
 
-                      <td>{booking.customer}</td>
+                    <tr>
 
-                      <td>{booking.item}</td>
-
-                      <td>{booking.dates}</td>
-
-                      <td>{booking.delivery}</td>
-
-                      <td>{booking.total}</td>
-
-                      <td>
-
-                        <span
-                          className={
-                            booking.status === 'Completed'
-                              ? css.activeStatus
-                              : css.draftStatus
-                          }
-                        >
-                          {booking.status}
-                        </span>
-
-                      </td>
-
-                      <td>
-
-                        <div className={css.actionButtons}>
-
-                          <button className={css.smallBtn}>
-                            View
-                          </button>
-
-                          <button className={css.smallBtn}>
-                            Message
-                          </button>
-
-                          <button className={css.smallBtn}>
-                            Invoice
-                          </button>
-
-                        </div>
-
+                      <td
+                        colSpan="7"
+                        className={css.emptyState}
+                      >
+                        No bookings found
                       </td>
 
                     </tr>
-                  ))}
+
+                  ) : (
+
+                    currentBookings.map(booking => (
+
+                      <tr key={booking.id.uuid}>
+
+                        <td>
+                          {
+                            booking.customer?.attributes
+                              ?.profile
+                              ?.displayName || 'Customer'
+                          }
+                        </td>
+
+                        <td>
+                          {
+                            booking.listing?.attributes
+                              ?.title || 'Listing'
+                          }
+                        </td>
+
+                        <td>
+                          {
+                            booking.booking?.attributes?.start
+                              ? new Date(
+                                  booking.booking.attributes.start
+                                ).toLocaleDateString()
+
+                              : booking.attributes?.createdAt
+                              ? new Date(
+                                  booking.attributes.createdAt
+                                ).toLocaleDateString()
+
+                              : '-'
+                          }
+                        </td>
+
+                        <td>
+                          {
+                            booking.attributes?.deliveryMethod
+                              || 'Pickup'
+                          }
+                        </td>
+
+                        <td>
+                          {
+                            booking.attributes?.payinTotal
+                              ? `$${booking.attributes.payinTotal.amount / 100}`
+                              : '-'
+                          }
+                        </td>
+
+                        <td>
+
+                          <span
+                            className={
+                              booking.attributes.state ===
+                              'state/preauthorized'
+                                ? css.statusPending
+
+                                : booking.attributes.state ===
+                                  'state/accepted'
+                                ? css.statusAccepted
+
+                                : booking.attributes.state ===
+                                    'state/cancelled' ||
+                                  booking.attributes.state ===
+                                    'state/expired'
+                                ? css.statusCancelled
+
+                                : css.statusCompleted
+                            }
+                          >
+
+                            {booking.attributes.state ===
+                              'state/preauthorized' &&
+                              'Upcoming'}
+
+                            {booking.attributes.state ===
+                              'state/accepted' &&
+                              'Accepted'}
+
+                            {booking.attributes.state ===
+                              'state/delivered' &&
+                              'Completed'}
+
+                            {booking.attributes.state ===
+                              'state/cancelled' &&
+                              'Cancelled'}
+
+                            {booking.attributes.state ===
+                              'state/expired' &&
+                              'Expired'}
+
+                            {booking.attributes.state ===
+                              'state/pending-payment' &&
+                              'Pending Payment'}
+
+                          </span>
+
+                        </td>
+
+                        <td>
+
+                          <div className={css.actionButtons}>
+
+                            {booking.attributes.lastTransition !==
+                              'transition/accept' && (
+
+                              <button
+                                className={css.approveBtn}
+                                onClick={async () => {
+
+                                  try {
+
+                                    await sdk.transactions.transition({
+                                      id: booking.id,
+                                      transition: 'transition/accept',
+                                      params: {},
+                                    });
+
+                                    await fetchBookings();
+
+                                    alert('Booking accepted');
+
+                                  } catch (e) {
+
+                                    console.log(e.data);
+
+                                  }
+
+                                }}
+                              >
+                                Accept
+                              </button>
+
+                            )}
+
+                            <button
+                              className={css.smallBtn}
+                              onClick={() => {
+
+                                const slug =
+                                  booking.listing?.attributes?.title
+                                    ?.replace(/\s+/g, '-')
+                                    ?.toLowerCase();
+
+                                if (!slug || !booking.listing?.id?.uuid) {
+                                  return;
+                                }
+
+                                window.open(
+                                  `/l/${slug}/${booking.listing.id.uuid}`,
+                                  '_blank'
+                                );
+
+                              }}
+                            >
+                              View
+                            </button>
+                            <button
+                            className={css.smallBtn}
+                            onClick={() =>
+                              setSelectedBooking(booking)
+                            }
+                          >
+                            Details
+                          </button>
+                            <button
+                              className={css.smallBtn}
+                              onClick={() => {
+
+                                window.open(
+                                  `/sale/${booking.id.uuid}`,
+                                  '_blank'
+                                );
+
+                              }}
+                            >
+                              Message
+                            </button>
+
+                            <button
+                              className={css.smallBtn}
+                              onClick={() => {
+
+                                window.open(
+                                  `/sale/${booking.id.uuid}`,
+                                  '_blank'
+                                );
+
+                              }}
+                            >
+                              Invoice
+                            </button>
+
+                          </div>
+
+                        </td>
+
+                      </tr>
+
+                    ))
+
+                  )}
 
                 </tbody>
 
-              </table>
+                        </table>
 
+                        <div className={css.pagination}>
+
+                          <button
+                            className={css.pageBtn}
+                            disabled={currentPage === 1}
+                            onClick={() =>
+                              setCurrentPage(prev => prev - 1)
+                            }
+                          >
+                            Previous
+                          </button>
+
+                          <div className={css.pageNumbers}>
+
+                            {[...Array(totalPages)].map((_, index) => (
+
+                              <button
+                                key={index}
+                                className={
+                                  currentPage === index + 1
+                                    ? css.activePageBtn
+                                    : css.pageNumberBtn
+                                }
+                                onClick={() =>
+                                  setCurrentPage(index + 1)
+                                }
+                              >
+                                {index + 1}
+                              </button>
+
+                            ))}
+
+                          </div>
+
+                          <button
+                            className={css.pageBtn}
+                            disabled={
+                              currentPage === totalPages
+                            }
+                            onClick={() =>
+                              setCurrentPage(prev => prev + 1)
+                            }
+                          >
+                            Next
+                          </button>
+
+                        </div>
+                          </>
+              )}
             </div>
+                        <div className={css.mobileBookings}>
 
+                          {currentBookings.map(booking => (
+
+                            <div
+                              key={booking.id.uuid}
+                              className={css.mobileBookingCard}
+                            >
+
+                              <p>
+                                <strong>Customer:</strong>{' '}
+                                {
+                                  booking.customer?.attributes
+                                    ?.profile?.displayName
+                                }
+                              </p>
+
+                              <p>
+                                <strong>Item:</strong>{' '}
+                                {
+                                  booking.listing?.attributes
+                                    ?.title
+                                }
+                              </p>
+
+                              <p>
+                                <strong>Date:</strong>{' '}
+                                {
+                                  new Date(
+                                    booking.attributes.createdAt
+                                  ).toLocaleDateString()
+                                }
+                              </p>
+
+                              <p>
+                                <strong>Total:</strong>{' '}
+                                ${
+                                  booking.attributes.payinTotal
+                                    ?.amount / 100
+                                }
+                              </p>
+
+                              <div className={css.mobileCardButtons}>
+
+                                  {booking.attributes?.state ===
+                                    'state/preauthorized' && (
+
+                                    <button
+                                      className={css.acceptBtn}
+                                    >
+                                      Accept
+                                    </button>
+
+                                  )}
+
+                                  <button
+                                    className={css.smallBtn}
+                                    onClick={() =>
+                                      setSelectedBooking(booking)
+                                    }
+                                  >
+                                    Details
+                                  </button>
+
+                                  <button
+                                    className={css.smallBtn}
+                                    onClick={() => {
+
+                                      window.open(
+                                        `/sale/${booking.id.uuid}`,
+                                        '_blank'
+                                      );
+
+                                    }}
+                                  >
+                                    Message
+                                  </button>
+
+                                  <button
+                                    className={css.smallBtn}
+                                    onClick={() => {
+
+                                      window.open(
+                                        `/sale/${booking.id.uuid}`,
+                                        '_blank'
+                                      );
+
+                                    }}
+                                  >
+                                    Invoice
+                                  </button>
+
+                                  <button
+                                    className={css.smallBtn}
+                                    onClick={() => {
+
+                                      const slug =
+                                        booking.listing?.attributes?.title
+                                          ?.replace(/\s+/g, '-')
+                                          ?.toLowerCase();
+
+                                      if (!slug || !booking.listing?.id?.uuid) {
+                                        return;
+                                      }
+
+                                      window.open(
+                                        `/l/${slug}/${booking.listing.id.uuid}`,
+                                        '_blank'
+                                      );
+
+                                    }}
+                                  >
+                                    View
+                                  </button>
+                                </div>
+
+                            </div>
+
+                          ))}
+
+                        </div>
           </div>
         )}
                 {/* INVENTORY PAGE */}
@@ -744,22 +1658,23 @@ const filteredInventoryItems =
             <section className={css.summaryGrid}>
 
               <div className={css.summaryCard}>
-                <h3>$24,850</h3>
+                <h3>${grossRevenue / 100}</h3>
                 <p>Gross Booking Revenue</p>
               </div>
 
               <div className={css.summaryCard}>
-                <h3>$18,420</h3>
+                <h3>${netPayouts / 100}</h3>
                 <p>Net Payouts</p>
               </div>
 
               <div className={css.summaryCard}>
-                <h3>$2,800</h3>
-                <p>Upcoming Payout</p>
-              </div>
-
+                  <h3>
+                    ${pendingPayouts / 100}
+                  </h3>
+                  <p>Upcoming Payout</p>
+                </div>
               <div className={css.summaryCard}>
-                <h3>$640</h3>
+                <h3>${pendingPayouts / 100}</h3>
                 <p>Pending Payouts</p>
               </div>
 
@@ -828,33 +1743,59 @@ const filteredInventoryItems =
 
                   <tbody>
 
-                    {payoutTransactions.map(transaction => (
+                    {bookings.map(transaction => (
                       <tr key={transaction.id}>
 
-                        <td>{transaction.id}</td>
-
-                        <td>{transaction.date}</td>
-
-                        <td>{transaction.renter}</td>
-
-                        <td>{transaction.amount}</td>
-
-                        <td>{transaction.fees}</td>
-
-                        <td>{transaction.net}</td>
+                        <td>{transaction.id.uuid}</td>
 
                         <td>
-                          <span
-                            className={
-                              transaction.status === 'Paid'
-                                ? css.activeStatus
-                                : css.draftStatus
-                            }
-                          >
-                            {transaction.status}
-                          </span>
-                        </td>
+                        {
+                          new Date(
+                            transaction.attributes.createdAt
+                          ).toLocaleDateString()
+                        }
+                      </td>
 
+                      <td>
+                        {
+                          transaction.customer?.attributes
+                            ?.profile?.displayName
+                            || 'Customer'
+                        }
+                      </td>
+
+                      <td>
+                        {
+                          transaction.attributes?.payinTotal
+                            ? `$${transaction.attributes.payinTotal.amount / 100}`
+                            : '-'
+                        }
+                      </td>
+
+                      <td>
+                        {
+                          transaction.attributes?.commission
+                            ? `$${transaction.attributes.commission.amount / 100}`
+                            : '$0'
+                        }
+                      </td>
+
+                      <td>
+                        {
+                          transaction.attributes?.payoutTotal
+                            ? `$${transaction.attributes.payoutTotal.amount / 100}`
+                            : '-'
+                        }
+                      </td>
+
+                      <td>
+                      <span className={css.activeStatus}>
+                        {
+                          transaction.attributes
+                            ?.lastTransition
+                        }
+                      </span>
+                    </td>
                       </tr>
                     ))}
 
@@ -1262,6 +2203,77 @@ const filteredInventoryItems =
 
           </div>
         )}
+        {selectedBooking && (
+
+            <div className={css.modalOverlay}>
+
+              <div className={css.bookingModal}>
+
+                <div className={css.modalHeader}>
+
+                  <h2>Booking Details</h2>
+
+                  <button
+                    className={css.closeModal}
+                    onClick={() =>
+                      setSelectedBooking(null)
+                    }
+                  >
+                    ✕
+                  </button>
+
+                </div>
+
+                <div className={css.modalContent}>
+
+                  <p>
+                    <strong>Customer:</strong>{' '}
+                    {
+                      selectedBooking.customer
+                        ?.attributes?.profile
+                        ?.displayName
+                    }
+                  </p>
+
+                  <p>
+                    <strong>Listing:</strong>{' '}
+                    {
+                      selectedBooking.listing
+                        ?.attributes?.title
+                    }
+                  </p>
+
+                  <p>
+                    <strong>Status:</strong>{' '}
+
+                        {selectedBooking.attributes?.state ===
+                          'state/preauthorized' &&
+                          'Pending'}
+
+                        {selectedBooking.attributes?.state ===
+                          'state/accepted' &&
+                          'Accepted'}
+
+                        {selectedBooking.attributes?.state ===
+                          'state/declined' &&
+                          'Rejected'}
+                  </p>
+
+                  <p>
+                    <strong>Total:</strong>{' '}
+                    ${
+                      selectedBooking.attributes
+                        ?.payinTotal?.amount / 100
+                    }
+                  </p>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          )}
       </main>
 
     </div>
@@ -1277,6 +2289,12 @@ const mapStateToProps = state => ({
 
   loadingListings:
     state.VendorDashboardPage.listingsLoading,
+  
+  bookings:
+  state.VendorDashboardPage.bookings,
+
+  bookingsLoading:
+    state.VendorDashboardPage.bookingsLoading,
 
 });
 
@@ -1284,6 +2302,9 @@ const mapDispatchToProps = dispatch => ({
 
   fetchOwnListings: () =>
     dispatch(fetchOwnListings()),
+  
+  fetchBookings: () =>
+  dispatch(fetchBookings()),
 
   publishListing: listingId =>
     dispatch(publishListing(listingId)),
