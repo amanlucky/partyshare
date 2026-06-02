@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect, useRef, } from 'react';
 import { connect } from 'react-redux';
 import sdk from '../../util/sdk';
 import css from './VendorDashboardPage.module.css';
@@ -72,24 +72,7 @@ const reviews = [
     date: 'May 15, 2026',
   },
 ];
-const conversations = [
-  {
-    id: 1,
-    renter: 'Sarah Johnson',
-    item: 'Luxury Wedding Tent',
-    lastMessage: 'Can setup happen earlier on Friday?',
-    time: '10:24 AM',
-    unread: true,
-  },
-  {
-    id: 2,
-    renter: 'Michael Lee',
-    item: 'LED Dance Floor',
-    lastMessage: 'Thank you, everything looks good.',
-    time: 'Yesterday',
-    unread: false,
-  },
-];
+
 
 const activeMessages = [
   {
@@ -147,11 +130,100 @@ const {
   useEffect(() => {
     setCurrentPage(1);
   }, [bookingFilter, bookingSearch]);
-  const bookingsPerPage = 10;
+
+  const bookingsPerPage = 10; 
+
+  const [conversations, setConversations] =
+  useState([]);
+
   const [loadingBookings, setLoadingBookings] =
   useState(false);
+
   const [selectedBooking, setSelectedBooking] =
   useState(null);
+
+  const [activeConversation, setActiveConversation] =
+  useState(null);
+  
+  const messagesEndRef = useRef(null);
+useEffect(() => {
+
+  if (
+    activeConversation?.messages?.length
+  ) {
+
+    messagesEndRef.current?.scrollIntoView({
+      behavior: 'smooth',
+    });
+
+  }
+
+}, [activeConversation?.messages?.length]);
+
+  useEffect(() => {
+
+  if (!activeConversation?.transactionId) {
+    return;
+  }
+
+  const interval = setInterval(async () => {
+
+    try {
+
+      const messagesResponse =
+        await sdk.messages.query({
+          transactionId:
+            activeConversation.transactionId,
+        });
+
+      const realMessages =
+  messagesResponse.data.data.reverse().map(msg => {
+
+    console.log(
+      'MESSAGE AUTHOR:',
+    );
+      console.log(
+        'MESSAGE CREATED BY:',
+      );
+    return {
+
+     sender: 'renter',
+
+      text: msg.attributes.content,
+
+      time: new Date(
+        msg.attributes.createdAt
+      ).toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      }),
+
+    };
+
+  });
+
+      setActiveConversation(prev => ({
+        ...prev,
+        messages: realMessages,
+      }));
+
+    } catch (e) {
+
+      console.log(e);
+
+    }
+
+  }, 3000);
+
+  return () => clearInterval(interval);
+
+}, [
+  activeConversation?.transactionId,
+]);
+
+  const [messageText, setMessageText] =
+  useState('');
+
   const [inventoryFilter, setInventoryFilter] =
    useState('all');
 
@@ -164,6 +236,25 @@ const {
     await fetchOwnListings();
 
     await fetchBookings();
+
+        const transactionsResponse =
+        await sdk.transactions.query({
+          only: 'sale',
+          include: [
+            'customer',
+            'listing',
+          ],
+        });
+
+      console.log(
+        'TRANSACTIONS:',
+        transactionsResponse
+      );
+
+    console.log(
+      'TRANSACTIONS:',
+      transactionsResponse
+    );
 
     setLoadingBookings(false);
 
@@ -183,6 +274,53 @@ window.bookings = bookings;
     );
 
   }
+
+}, [bookings]);
+
+useEffect(() => {
+
+  if (!bookings.length) {
+    return;
+  }
+
+  const generatedConversations =
+    bookings.map(booking => ({
+
+      id: booking.id.uuid,
+
+      renter:
+        booking.customer?.attributes
+          ?.profile?.displayName
+          || 'Customer',
+
+      item:
+        booking.listing?.attributes
+          ?.title
+          || 'Listing',
+
+      lastMessage:
+        'Start conversation',
+
+      time:
+        new Date(
+          booking.attributes.createdAt
+        ).toLocaleDateString(),
+
+      unread: false,
+
+      transactionId:
+        booking.id,
+
+      listingId:
+        booking.listing?.id?.uuid,
+
+      messages: [],
+
+    }));
+
+  setConversations(
+    generatedConversations
+  );
 
 }, [bookings]);
 
@@ -326,6 +464,35 @@ const pendingRequestsCount =
       'state/preauthorized'
   ).length;
 
+const approvedBookingsCount =
+  bookings.filter(
+    booking =>
+      booking.attributes.state ===
+      'state/accepted'
+  ).length;
+
+const monthlyRevenue =
+  bookings
+    .filter(
+      booking =>
+        booking.attributes.state ===
+        'state/accepted'
+    )
+    .reduce(
+      (sum, booking) =>
+        sum +
+        (
+          booking.attributes
+            ?.payinTotal?.amount || 0
+        ),
+      0
+    ) / 100;
+
+const unreadMessagesCount =
+  conversations.filter(
+    c => c.unread
+  ).length;
+
 const upcomingBookingsCount =
   bookings.filter(
     booking =>
@@ -350,28 +517,23 @@ const monthlyEarnings =
     );
 
   }, 0) / 100;
-const summaryCards = [
+
+  const summaryCards = [
   {
-    title: 'New Booking Requests',
+    title: 'Pending Requests',
     value: pendingRequestsCount,
   },
   {
-    title: 'Upcoming Bookings',
-    value: upcomingBookingsCount,
+    title: 'Approved Bookings',
+    value: approvedBookingsCount,
+  },
+  {
+    title: 'Monthly Revenue',
+    value: `$${monthlyRevenue}`,
   },
   {
     title: 'Unread Messages',
-    value: conversations.filter(
-      c => c.unread
-    ).length,
-  },
-  {
-    title: 'Active Listings',
-    value: activeListingsCount,
-  },
-  {
-    title: 'Monthly Earnings',
-    value: `$${monthlyEarnings}`,
+    value: unreadMessagesCount,
   },
 ];
 
@@ -490,6 +652,9 @@ const totalPages = Math.ceil(
   sortedBookings.length / bookingsPerPage
 );
 
+
+
+
   return (
     <div className={css.dashboardWrapper}>
         {mobileMenuOpen && (
@@ -524,26 +689,109 @@ const totalPages = Math.ceil(
 
        <nav className={css.nav}>
 
-          {menuItems.map(item => (
+        <div className={css.menuSection}>
+          Dashboard
+        </div>
 
-            <div
-              key={item}
-              className={`${css.navItem} ${
-                activePage === item ? css.activeNavItem : ''
-              }`}
-              onClick={() => {
-                setActivePage(item);
-                setMobileMenuOpen(false);
-              }}
-            >
+        {[
+          'Overview',
+          'Booking Requests',
+          'Bookings',
+        ].map(item => (
 
-              {item}
+          <div
+            key={item}
+            className={`${css.navItem} ${
+              activePage === item
+                ? css.activeNavItem
+                : ''
+            }`}
+            onClick={() => {
+              setActivePage(item);
+              setMobileMenuOpen(false);
+            }}
+          >
+            {item}
+          </div>
 
-            </div>
+        ))}
 
-          ))}
+        <div className={css.menuSection}>
+          Business
+        </div>
 
-        </nav>
+        {[
+          'Inventory',
+          'Earnings & Payouts',
+        ].map(item => (
+
+          <div
+            key={item}
+            className={`${css.navItem} ${
+              activePage === item
+                ? css.activeNavItem
+                : ''
+            }`}
+            onClick={() => {
+              setActivePage(item);
+              setMobileMenuOpen(false);
+            }}
+          >
+            {item}
+          </div>
+
+        ))}
+
+        <div className={css.menuSection}>
+          Communication
+        </div>
+
+        {[
+          'Messages',
+          'Reviews',
+        ].map(item => (
+
+          <div
+            key={item}
+            className={`${css.navItem} ${
+              activePage === item
+                ? css.activeNavItem
+                : ''
+            }`}
+            onClick={() => {
+              setActivePage(item);
+              setMobileMenuOpen(false);
+            }}
+          >
+            {item}
+          </div>
+
+        ))}
+
+        <div className={css.menuSection}>
+          Settings
+        </div>
+
+        {['Account Settings'].map(item => (
+
+          <div
+            key={item}
+            className={`${css.navItem} ${
+              activePage === item
+                ? css.activeNavItem
+                : ''
+            }`}
+            onClick={() => {
+              setActivePage(item);
+              setMobileMenuOpen(false);
+            }}
+          >
+            {item}
+          </div>
+
+        ))}
+
+      </nav>
       </aside>
 
       {/* MAIN CONTENT */}
@@ -1238,18 +1486,68 @@ const totalPages = Math.ceil(
                             Details
                           </button>
                             <button
-                              className={css.smallBtn}
-                              onClick={() => {
+                                className={css.smallBtn}
+                                onClick={async () => {
 
-                                window.open(
-                                  `/sale/${booking.id.uuid}`,
-                                  '_blank'
-                                );
+                                  const conversationData = {
+                                    id: booking.id.uuid,
 
-                              }}
-                            >
-                              Message
-                            </button>
+                                    renter:
+                                      booking.customer?.attributes
+                                        ?.profile?.displayName,
+
+                                    item:
+                                      booking.listing?.attributes
+                                        ?.title,
+
+                                    transactionId: booking.id,
+
+                                    messages: [],
+                                  };
+
+                                  setActiveConversation(conversationData);
+
+                                  setActivePage('Messages');
+
+                                  try {
+
+                                    const messagesResponse =
+                                      await sdk.messages.query({
+                                        transactionId: booking.id,
+                                      });
+
+                                    const realMessages =
+                                      messagesResponse.data.data.reverse().map(msg => ({
+
+                                       sender: 'renter',
+
+                                        text: msg.attributes.content,
+
+                                        time: new Date(
+                                          msg.attributes.createdAt
+                                        ).toLocaleTimeString([], {
+                                          hour: '2-digit',
+                                          minute: '2-digit',
+                                        }),
+
+                                      }));
+
+                                    setActiveConversation({
+                                      ...conversationData,
+                                      messages: realMessages,
+                                    });
+
+                                  } catch (e) {
+
+                                    console.log(e);
+
+                                  }
+
+                                }}
+                              >
+                                {/* Booking desktop message button  */}
+                                Message
+                              </button>
 
                             <button
                               className={css.smallBtn}
@@ -1394,18 +1692,77 @@ const totalPages = Math.ceil(
                                   </button>
 
                                   <button
-                                    className={css.smallBtn}
-                                    onClick={() => {
+                                      className={css.smallBtn}
+                                      onClick={async () => {
 
-                                      window.open(
-                                        `/sale/${booking.id.uuid}`,
-                                        '_blank'
-                                      );
+                                        const conversationData = {
+                                          id: booking.id.uuid,
 
-                                    }}
-                                  >
-                                    Message
-                                  </button>
+                                          renter:
+                                            booking.customer?.attributes
+                                              ?.profile?.displayName,
+
+                                          item:
+                                            booking.listing?.attributes
+                                              ?.title,
+
+                                          transactionId: booking.id,
+
+                                          messages: [],
+                                        };
+
+                                        setActiveConversation(conversationData);
+
+                                        setActivePage('Messages');
+
+                                        try {
+
+                                          const messagesResponse =
+                                            await sdk.messages.query({
+                                              transactionId: booking.id,
+                                            });
+
+                                          const realMessages =
+                                              messagesResponse.data.data
+                                                .reverse()
+                                                .map(msg => {
+
+                                                  const sender =
+                                                    msg.attributes.content === messageText
+                                                      ? 'vendor'
+                                                      : 'renter';
+
+                                                  return {
+
+                                                    sender,
+
+                                                    text: msg.attributes.content,
+
+                                              time: new Date(
+                                                msg.attributes.createdAt
+                                              ).toLocaleTimeString([], {
+                                                hour: '2-digit',
+                                                minute: '2-digit',
+                                              }),
+
+                                            }});
+
+                                          setActiveConversation({
+                                            ...conversationData,
+                                            messages: realMessages,
+                                          });
+
+                                        } catch (e) {
+
+                                          console.log(e);
+
+                                        }
+
+                                      }}
+                                    >
+                                      {/* booking page mobile message button */}
+                                      Message mob
+                                    </button>
 
                                   <button
                                     className={css.smallBtn}
@@ -1906,10 +2263,77 @@ const totalPages = Math.ceil(
               </div>
 
               {conversations.map(conversation => (
-                <div
-                  key={conversation.id}
-                  className={css.conversationItem}
-                >
+                  <div
+                    key={conversation.id}
+                    className={`${css.conversationItem} ${
+                      activeConversation?.renter ===
+                      conversation.renter
+                        ? css.activeConversation
+                        : ''
+                    }`}
+                    onClick={async () => {
+
+                      setActiveConversation(conversation);
+
+                      try {
+
+                        const messagesResponse =
+                          await sdk.messages.query({
+                            transactionId:
+                              conversation.transactionId,
+                          });
+
+                        console.log(
+                          'MESSAGES:',
+                          messagesResponse
+                        );
+
+const currentUserId =
+  currentUser?.id?.uuid;
+
+const providerId =
+  conversation.providerId;
+
+const realMessages =
+  messagesResponse.data.data
+    .reverse()
+    .map(msg => {
+
+     const sender =
+        msg.attributes.content === messageText
+          ? 'vendor'
+          : 'renter';
+
+      return {
+
+        sender,
+
+        text: msg.attributes.content,
+
+        time: new Date(
+          msg.attributes.createdAt
+        ).toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
+
+      };
+
+    });
+
+                        setActiveConversation({
+                          ...conversation,
+                          messages: realMessages,
+                        });
+
+                      } catch (e) {
+
+                        console.error(e);
+
+                      }
+
+                    }}
+                  >
 
                   <div className={css.conversationTop}>
                     <h3>{conversation.renter}</h3>
@@ -1942,8 +2366,18 @@ const totalPages = Math.ceil(
               <div className={css.chatHeader}>
 
                 <div>
-                  <h2>Sarah Johnson</h2>
-                  <p>Luxury Wedding Tent Booking</p>
+                  <h2>
+                    {
+                      activeConversation?.renter ||
+                      'Select Conversation'
+                    }
+                  </h2>
+                  <p>
+                    {
+                      activeConversation?.item ||
+                      'No active booking'
+                    }
+                  </p>
                 </div>
 
                 <button className={css.smallBtn}>
@@ -1954,38 +2388,169 @@ const totalPages = Math.ceil(
 
               <div className={css.messagesContainer}>
 
-                {activeMessages.map(message => (
-                  <div
-                    key={message.id}
-                    className={
-                      message.sender === 'vendor'
-                        ? css.vendorMessage
-                        : css.renterMessage
-                    }
-                  >
+               {activeConversation?.messages?.map(
+                  (message, index) => {
 
-                    <div className={css.messageBubble}>
-                      {message.text}
+                    console.log(message);
+ 
+                    return (
+                   
+                    <div
+                      key={index}
+                      className={
+                        message.sender === 'vendor'
+                          ? css.vendorMessage
+                          : css.renterMessage
+                      }
+                    > 
+
+                      <div
+                            className={
+                              message.sender === 'vendor'
+                                ? css.vendorBubble
+                                : css.renterBubble
+                            }
+                          >
+                            {message.sender} - {message.text}
+                          </div>
+
+                      <span className={css.messageTime}>
+                        {message.time}
+                      </span>
+
                     </div>
 
-                    <span className={css.messageTime}>
-                      {message.time}
-                    </span>
+                  );
+                })
+                }
+                <div ref={messagesEndRef}></div>
+               </div>
 
-                  </div>
-                ))}
-
-              </div>
-
-              <div className={css.messageInputArea}>
+               <div className={css.messageInputArea}>
 
                 <input
                   type="text"
                   placeholder="Type your message..."
-                  className={css.messageInput}
+                  value={messageText}
+                  onChange={e =>
+                    setMessageText(e.target.value)
+                  }
                 />
 
-                <button className={css.approveBtn}>
+                <button
+                  className={css.approveBtn}
+                  onClick={async () => {
+
+                    if (!messageText.trim()) {
+                          return;
+                        }
+
+                        try {
+                            console.log(
+                              'ACTIVE CONVERSATION:',
+                              activeConversation
+                            );
+                          const newMessage = {
+                              sender: 'vendor',
+
+                              text: messageText,
+
+                              time: new Date().toLocaleTimeString([], {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              }),
+                            };
+
+                            await sdk.messages.send({
+                              transactionId:
+                                activeConversation.transactionId,
+
+                              content: messageText,
+                            });
+
+                            setActiveConversation(prev => ({
+                              ...prev,
+
+                              messages: [
+                                ...(prev.messages || []),
+                                newMessage,
+                              ],
+                            }));
+
+                            setMessageText('');
+
+                          const messagesResponse =
+                          console.log(
+                                'QUERY TRANSACTION:',
+                                activeConversation?.transactionId
+                              );
+                            await sdk.messages.query({
+                              transactionId:
+                                activeConversation.transactionId,
+                            });
+                            console.log(
+                              'MESSAGES RESPONSE:',
+                              messagesResponse
+                            );
+                          const realMessages =
+                              messagesResponse.data.data
+                                .reverse()
+                                .map(msg => {
+
+                                  const sender =
+                                    msg.attributes.content === messageText
+                                      ? 'vendor'
+                                      : 'renter';
+
+                                  return {
+
+                                    sender,
+
+                              text: msg.attributes.content,
+
+                              time: new Date(
+                                msg.attributes.createdAt
+                              ).toLocaleTimeString([], {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              }),
+
+                            }}
+                          );
+
+                          const updatedConversation = {
+                            ...activeConversation,
+                            messages: realMessages,
+                          };
+
+                          setActiveConversation({
+                            ...updatedConversation,
+                            transactionId:
+                              activeConversation.transactionId,
+                          });
+
+                          setConversations(prev =>
+                            prev.map(conversation =>
+
+                              conversation.id ===
+                              updatedConversation.id
+
+                                ? updatedConversation
+
+                                : conversation
+
+                            )
+                          );
+                          setMessageText('');
+
+                        } catch (e) {
+
+                          console.log(e);
+
+                        }
+
+                  }}
+                >
                   Send
                 </button>
 
