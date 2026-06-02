@@ -2452,9 +2452,7 @@ const realMessages =
                             );
                           const newMessage = {
                               sender: 'vendor',
-
                               text: messageText,
-
                               time: new Date().toLocaleTimeString([], {
                                 hour: '2-digit',
                                 minute: '2-digit',
