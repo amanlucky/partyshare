@@ -2468,7 +2468,6 @@ const realMessages =
 
                             setActiveConversation(prev => ({
                               ...prev,
-
                               messages: [
                                 ...(prev.messages || []),
                                 newMessage,
@@ -2534,9 +2533,7 @@ const realMessages =
                               updatedConversation.id
 
                                 ? updatedConversation
-
                                 : conversation
-
                             )
                           );
                           setMessageText('');
