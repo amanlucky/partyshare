@@ -1,0 +1,282 @@
+import React from 'react';
+import css from "../../../containers/VendorDashboardPage/VendorDashboardPage.module.css";
+
+import {
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+} from "recharts";
+
+const OverviewTab = ({
+  summaryCards,
+  bookings,
+  inventoryItems,
+  conversations,
+  earningsData,
+}) => {
+  return (
+    
+    <>
+                  {/* BOOKING REQUESTS */}
+               {/*
+                  <section className={css.section}>
+                    <div className={css.sectionHeader}>
+                      <h2>New Booking Requests</h2>
+                    </div>
+      
+                    <div className={css.bookingGrid}>
+                      {bookingRequests.map(request => (
+                         <div key={request.id.uuid} className={css.bookingCard}>
+      
+                          <div className={css.bookingTop}>
+                            <h3>
+                              {
+                                request.listing?.attributes?.title
+                                || 'Listing'
+                              }
+                            </h3>
+      
+                            <span className={css.status}>
+                              {
+                                request.customer?.attributes
+                                  ?.profile?.displayName
+                                  || 'Customer'
+                              }
+                            </span>
+                          </div>
+      
+                          <p><strong>Renter:</strong>{
+                            request.customer?.attributes
+                              ?.profile?.displayName
+                              || 'Customer'
+                          }</p>
+                         <p><strong>Dates:</strong> 
+                              {
+                                request.attributes?.createdAt
+                              ? new Date(
+                                  request.attributes.createdAt
+                                ).toLocaleDateString()
+                              : '-'
+                              }
+                            </p>
+                          <p><strong>Total:</strong>{
+                                request.attributes?.payinTotal
+                                  ? `$${request.attributes.payinTotal.amount / 100}`
+                                  : '-'
+                              }</p>
+      
+                          <div className={css.buttonRow}>
+                            <button
+                                className={css.approveBtn}
+                                onClick={async () => {
+      
+                                  try {
+      
+                                    await sdk.transactions.transition({
+                                      id: request.id,
+                                      transition: 'transition/accept',
+                                      params: {},
+                                    });
+      
+                                    await fetchBookings();
+      
+                                    alert('Booking accepted');
+      
+                                  } catch (e) {
+      
+                                    console.log(e);
+      
+                                  }
+      
+                                }}
+                              >
+                                Approve
+                              </button>
+      
+                             <button
+                                className={css.rejectBtn}
+                                onClick={async () => {
+      
+                                  try {
+      
+                                    await sdk.transactions.transition({
+                                      id: request.id,
+                                      transition: 'transition/decline',
+                                      params: {},
+                                    });
+      
+                                    await fetchBookings();
+      
+                                    alert('Booking declined');
+      
+                                  } catch (e) {
+      
+                                    console.log(e);
+      
+                                    alert(JSON.stringify(e.data));
+      
+                                  }
+      
+                                }}
+                              >
+                                Reject
+                              </button>
+                          </div>
+      
+                        </div>
+                      ))
+                      
+                      }
+                    </div>
+                  </section>
+                   */}
+                  {/* SUMMARY CARDS */}
+      
+                  <section className={css.summaryGrid}>
+                    {summaryCards.map(card => (
+                      <div key={card.title} className={css.summaryCard}>
+      
+                        <div className={css.cardTop}>
+                          <h3>{card.value}</h3>
+      
+                          <div className={css.cardIcon}>
+                            {card.title === 'Pending Requests' && '📥'}
+                            {card.title === 'Approved Bookings' && '✅'}
+                            {card.title === 'Monthly Revenue' && '💰'}
+                            {card.title === 'Unread Messages' && '💬'}
+                          </div>
+                        </div>
+      
+                        <p>{card.title}</p>
+      
+                      </div>
+                    ))}
+                  </section>
+      
+                  {/* LATEST BOOKINGS */}
+      
+                  <section className={css.section}>
+                    <div className={css.sectionHeader}>
+                      <h2>Latest Bookings</h2>
+                    </div>
+      
+                    <div className={css.tableWrapper}>
+                      <table className={css.table}>
+                        <thead>
+                          <tr>
+                            <th>Item</th>
+                            <th>Renter</th>
+                            <th>Date</th>
+                            <th>Amount</th>
+                          </tr>
+                        </thead>
+      
+                        <tbody>
+                          {bookings.slice(0, 5).map(booking => (
+                            <tr key={booking.id.uuid}>
+                              <td>
+                                {
+                                  booking.listing?.attributes?.title
+                                  || 'Listing'
+                                }
+                              </td>
+                              <td>
+                                {
+                                  booking.customer?.attributes
+                                    ?.profile?.displayName
+                                    || 'Customer'
+                                }
+                              </td>
+                              <td>
+                                {
+                                  new Date(
+                                    booking.attributes.createdAt
+                                  ).toLocaleDateString()
+                                }
+                              </td>
+                              <td>
+                                  {
+                                    booking.attributes?.payinTotal
+                                      ? `$${booking.attributes.payinTotal.amount / 100}`
+                                      : '-'
+                                  }
+                                </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </section>
+                  <section className={css.widgetsGrid}>
+                <div className={css.widgetCard}>
+                  <h3>Earnings</h3>
+                  <div className={css.chartContainer}>
+                      <ResponsiveContainer width="100%" height={300}>
+                        <AreaChart data={earningsData}>
+                          <defs>
+                            <linearGradient
+                              id="colorRevenue"
+                              x1="0"
+                              y1="0"
+                              x2="0"
+                              y2="1"
+                            >
+                              <stop
+                                offset="5%"
+                                stopColor="#ff8800"
+                                stopOpacity={0.3}
+                              />
+                              <stop
+                                offset="95%"
+                                stopColor="#ff8800"
+                                stopOpacity={0}
+                              />
+                            </linearGradient>
+                          </defs>
+      
+                          <CartesianGrid strokeDasharray="3 3" />
+      
+                          <XAxis dataKey="month" />
+      
+                          <YAxis />
+      
+                          <Tooltip
+                            formatter={(value) => [`$${value}`, 'Revenue']}
+                          />
+      
+                          <Area
+                            type="linear"
+                            dataKey="earnings"
+                            stroke="#ff8800"
+                            fillOpacity={1}
+                            fill="url(#colorRevenue)"
+                          />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    </div>
+                </div>
+      
+                <div className={css.widgetCard}>
+                  <h3>Reviews & Ratings</h3>
+                  <p>No reviews yet</p>
+                </div>
+      
+                <div className={css.widgetCard}>
+                  <h3>Inventory</h3>
+                  <p>Total Listings: {inventoryItems.length}</p>
+                </div>
+      
+                <div className={css.widgetCard}>
+                  <h3>Latest Messages</h3>
+                  <p>{conversations.length} Conversations</p>
+                </div>
+              </section>
+    </>
+  );
+};
+
+export default OverviewTab;
