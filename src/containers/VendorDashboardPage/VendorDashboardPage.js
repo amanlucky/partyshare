@@ -2,9 +2,7 @@ import React, { useState, useEffect, useRef, } from 'react';
 import { connect } from 'react-redux';
 import sdk from '../../util/sdk';
 import css from './VendorDashboardPage.module.css';
-import VendorLayout from "../../components/vendor/VendorLayout";
 import VendorHeader from "../../components/vendor/VendorHeader";
-import VendorTabs from "../../components/vendor/VendorTabs";
 import OverviewTab from '../../components/vendor/pages/OverviewTab';
 import BookingsTab from '../../components/vendor/pages/BookingsTab';
 import InventoryTab from "../../components/vendor/pages/InventoryTab";
@@ -14,15 +12,15 @@ import MessagesTab from "../../components/vendor/pages/MessagesTab";
 import BookingRequestsTab from "../../components/vendor/pages/BookingRequestsTab";
 import AccountSettingsTab from "../../components/vendor/pages/AccountSettingsTab";
 import BookingDetailsModal from "../../components/vendor/modals/BookingDetailsModal";
+import useVendorDashboard from "../../components/vendor/hooks/useVendorDashboard";
+import useVendorStats from "../../components/vendor/hooks/useVendorStats";
+import useBookingFilters from '../../components/vendor/hooks/useBookingFilters';
+import useVendorConversations from "../../components/vendor/hooks/useVendorConversations";
+
 import {
-  ResponsiveContainer,
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-} from 'recharts';
+  reviews,
+} from "../../components/vendor/data/dashboardData";
+
 import {
   fetchOwnListings,
   fetchBookings,
@@ -31,90 +29,6 @@ import {
   openListing,
 } from './VendorDashboardPage.duck';
 
-const menuItems = [
-  'Overview',
-  'Booking Requests',
-  'Bookings',
-  'Inventory',
-  'Earnings & Payouts',
-  'Reviews',
-  'Messages',
-  'Account Settings',
-];
-
-const vendorBookings = [
-  {
-    id: 1,
-    customer: 'Emma Watson',
-    item: 'Gold Chiavari Chairs',
-    dates: 'May 22 - May 24',
-    total: '$320',
-    status: 'Upcoming',
-    delivery: 'Delivery',
-  },
-  {
-    id: 2,
-    customer: 'Michael Lee',
-    item: 'Wedding Tent Package',
-    dates: 'May 28 - May 30',
-    total: '$650',
-    status: 'Confirmed',
-    delivery: 'Pickup',
-  },
-  {
-    id: 3,
-    customer: 'Sarah Johnson',
-    item: 'LED Dance Floor',
-    dates: 'April 10 - April 11',
-    total: '$280',
-    status: 'Completed',
-    delivery: 'Delivery',
-  },
-];
-
-
-const reviews = [
-  {
-    id: 1,
-    reviewer: 'Sarah Johnson',
-    item: 'Luxury Wedding Tent',
-    rating: 5,
-    review:
-      'Amazing experience. Everything arrived on time and setup was perfect.',
-    date: 'May 12, 2026',
-  },
-  {
-    id: 2,
-    reviewer: 'Michael Lee',
-    item: 'LED Dance Floor',
-    rating: 4,
-    review:
-      'Great communication and clean equipment. Would rent again.',
-    date: 'May 15, 2026',
-  },
-];
-
-
-const activeMessages = [
-  {
-    id: 1,
-    sender: 'renter',
-    text: 'Hi, can setup happen earlier on Friday morning?',
-    time: '10:20 AM',
-  },
-  {
-    id: 2,
-    sender: 'vendor',
-    text: 'Yes absolutely, we can arrive around 8AM.',
-    time: '10:22 AM',
-  },
-  {
-    id: 3,
-    sender: 'renter',
-    text: 'Perfect, thank you!',
-    time: '10:24 AM',
-  },
-];
 const VendorDashboardPage = props => {
 
 const {
@@ -135,8 +49,25 @@ const {
 
 } = props;
 
-  const [activePage, setActivePage] = useState('Overview');
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+const {
+  activePage,
+  setActivePage,
+
+  selectedBooking,
+  setSelectedBooking,
+
+  messageText,
+  setMessageText,
+
+  inventoryFilter,
+  setInventoryFilter,
+
+  mobileMenuOpen,
+  setMobileMenuOpen,
+} = useVendorDashboard();
+
+
   const [bookingFilter, setBookingFilter] =
   useState('all');
   const [bookingSearch, setBookingSearch] =
@@ -152,22 +83,21 @@ const {
     setCurrentPage(1);
   }, [bookingFilter, bookingSearch]);
 
-  const bookingsPerPage = 10; 
+  const {
+    conversations,
+    setConversations,
 
-  const [conversations, setConversations] =
-  useState([]);
+    activeConversation,
+    setActiveConversation,
+  } = useVendorConversations(bookings);
+
+  const bookingsPerPage = 10; 
 
   const [loadingBookings, setLoadingBookings] =
   useState(false);
-
-  const [selectedBooking, setSelectedBooking] =
-  useState(null);
-
-  const [activeConversation, setActiveConversation] =
-  useState(null);
   
   const messagesEndRef = useRef(null);
-useEffect(() => {
+  useEffect(() => {
 
   if (
     activeConversation?.messages?.length
@@ -247,12 +177,6 @@ console.log(
   activeConversation?.transactionId,
 ]);
 
-  const [messageText, setMessageText] =
-  useState('');
-
-  const [inventoryFilter, setInventoryFilter] =
-   useState('all');
-
   useEffect(() => {
 
   const loadData = async () => {
@@ -303,130 +227,36 @@ window.bookings = bookings;
 
 }, [bookings]);
 
-useEffect(() => {
+const {
+  pendingCount,
+  approvedCount,
+  rejectedCount,
 
-  if (!bookings.length) {
-    return;
-  }
+  grossRevenue,
+  netPayouts,
+  pendingPayouts,
 
-  const generatedConversations =
-    bookings.map(booking => ({
+  upcomingCount,
+  completedCount,
+  cancelledCount,
 
-      id: booking.id.uuid,
+  unreadMessagesCount,
+  activeListingsCount,
+  monthlyEarnings,
+  
+  pendingRequestsCount,
+  approvedBookingsCount,
+  monthlyRevenue,
 
-      renter:
-        booking.customer?.attributes
-          ?.profile?.displayName
-          || 'Customer',
+  totalListings,
 
-      item:
-        booking.listing?.attributes
-          ?.title
-          || 'Listing',
-
-      lastMessage:
-        'Start conversation',
-
-      time:
-        new Date(
-          booking.attributes.createdAt
-        ).toLocaleDateString(),
-
-      unread: false,
-
-      transactionId:
-        booking.id,
-
-      listingId:
-        booking.listing?.id?.uuid,
-
-      messages: [],
-
-    }));
-
-  setConversations(
-    generatedConversations
-  );
-
-}, [bookings]);
-
-
-  const grossRevenue = bookings.reduce(
-  (total, booking) => {
-
-    const amount =
-      booking.attributes?.payinTotal?.amount || 0;
-
-    return total + amount;
-
-  },
-  0
+  overviewStats,
+} = useVendorStats(
+  bookings,
+  inventoryItems,
+  conversations,
+  requestFilter
 );
-
-const netPayouts = bookings.reduce(
-  (total, booking) => {
-
-    const amount =
-      booking.attributes?.payoutTotal?.amount || 0;
-
-    return total + amount;
-
-  },
-  0
-);
-
-const pendingPayouts = bookings
-  .filter(booking =>
-    booking.attributes?.lastTransition !==
-    'transition/complete'
-  )
-  .reduce((total, booking) => {
-
-    const amount =
-      booking.attributes?.payoutTotal?.amount || 0;
-
-    return total + amount;
-
-  }, 0);
-const upcomingCount = bookings.filter(
-  booking =>
-    booking.attributes.state ===
-      'state/preauthorized' ||
-    booking.attributes.state ===
-      'state/accepted'
-).length;
-
-const completedCount = bookings.filter(
-  booking =>
-    booking.attributes.state ===
-    'state/delivered'
-).length;
-
-const cancelledCount = bookings.filter(
-  booking =>
-    booking.attributes.state ===
-      'state/cancelled' ||
-    booking.attributes.state ===
-      'state/expired'
-).length;
-
-const pendingCount = bookings.filter(
-  booking =>
-    booking.attributes.state ===
-    'state/preauthorized'
-).length;
-
-const approvedCount = bookings.filter(
-  booking =>
-    booking.attributes.state ===
-    'state/accepted'
-).length;
-
-const rejectedCount = bookings.filter(
-  booking =>
-    booking.attributes.state ===
-    'state/declined'
-).length;
 
 const bookingRequests = bookings.filter(
   booking => {
@@ -462,41 +292,6 @@ if (requestFilter === 'rejected') {
 
   }
 );
-const pendingRequestsCount =
-  bookings.filter(
-    booking =>
-      booking.attributes.state ===
-      'state/preauthorized'
-  ).length;
-
-const approvedBookingsCount =
-  bookings.filter(
-    booking =>
-      booking.attributes.state ===
-      'state/accepted'
-  ).length;
-
-const monthlyRevenue =
-  bookings
-    .filter(
-      booking =>
-        booking.attributes.state ===
-        'state/accepted'
-    )
-    .reduce(
-      (sum, booking) =>
-        sum +
-        (
-          booking.attributes
-            ?.payinTotal?.amount || 0
-        ),
-      0
-    ) / 100;
-
-const unreadMessagesCount =
-  conversations.filter(
-    c => c.unread
-  ).length;
 
 const upcomingBookingsCount =
   bookings.filter(
@@ -505,23 +300,6 @@ const upcomingBookingsCount =
       'state/accepted'
   ).length;
 
-const activeListingsCount =
-  inventoryItems.filter(
-    item =>
-      item.attributes.state ===
-      'published'
-  ).length;
-
-const monthlyEarnings =
-  bookings.reduce((total, booking) => {
-
-    return (
-      total +
-      (booking.attributes?.payinTotal
-        ?.amount || 0)
-    );
-
-  }, 0) / 100;
 
   const summaryCards = [
   {
@@ -542,119 +320,16 @@ const monthlyEarnings =
   },
 ];
 
-const filteredBookings = bookings.filter(booking => {
-
-  const state = booking.attributes.state;
-
-  const customerName =
-    booking.customer?.attributes?.profile
-      ?.displayName?.toLowerCase() || '';
-
-  const listingTitle =
-    booking.listing?.attributes?.title
-      ?.toLowerCase() || '';
-
-  const searchValue =
-    bookingSearch.toLowerCase();
-
-  const matchesSearch =
-    customerName.includes(searchValue) ||
-    listingTitle.includes(searchValue);
-
-  if (!matchesSearch) {
-    return false;
-  }
-
-  if (bookingFilter === 'all') {
-    return true;
-  }
-
-  if (bookingFilter === 'upcoming') {
-    return (
-      state === 'state/preauthorized' ||
-      state === 'state/accepted'
-    );
-  }
-
-  if (bookingFilter === 'completed') {
-    return state === 'state/delivered';
-  }
-
-  if (bookingFilter === 'cancelled') {
-    return (
-      state === 'state/cancelled' ||
-      state === 'state/expired'
-    );
-  }
-
-  return true;
-
-});
-const sortedBookings = [
-  ...filteredBookings,
-].sort((a, b) => {
-
-  if (sortBy === 'newest') {
-
-    return (
-      new Date(
-        b.attributes.createdAt
-      ) -
-      new Date(
-        a.attributes.createdAt
-      )
-    );
-
-  }
-
-  if (sortBy === 'oldest') {
-
-    return (
-      new Date(
-        a.attributes.createdAt
-      ) -
-      new Date(
-        b.attributes.createdAt
-      )
-    );
-
-  }
-
-  if (sortBy === 'highest') {
-
-    return (
-      b.attributes.payinTotal.amount -
-      a.attributes.payinTotal.amount
-    );
-
-  }
-
-  if (sortBy === 'lowest') {
-
-    return (
-      a.attributes.payinTotal.amount -
-      b.attributes.payinTotal.amount
-    );
-
-  }
-
-  return 0;
-
-});
-const indexOfLastBooking =
-  currentPage * bookingsPerPage;
-
-const indexOfFirstBooking =
-  indexOfLastBooking - bookingsPerPage;
-
-const currentBookings =
-  sortedBookings.slice(
-    indexOfFirstBooking,
-    indexOfLastBooking
-  );
-
-const totalPages = Math.ceil(
-  sortedBookings.length / bookingsPerPage
+const {
+  currentBookings,
+  totalPages,
+} = useBookingFilters(
+  bookings,
+  bookingFilter,
+  bookingSearch,
+  sortBy,
+  currentPage,
+  bookingsPerPage
 );
 
 const monthlyRevenueMap = {};
