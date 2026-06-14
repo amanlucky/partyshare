@@ -16,7 +16,11 @@ import useVendorDashboard from "../../components/vendor/hooks/useVendorDashboard
 import useVendorStats from "../../components/vendor/hooks/useVendorStats";
 import useBookingFilters from '../../components/vendor/hooks/useBookingFilters';
 import useVendorConversations from "../../components/vendor/hooks/useVendorConversations";
-
+import bookingIcon from "../../assets/vendor/new-booking-request.png";
+import upcomingIcon from "../../assets/vendor/upcomming-booking.png";
+import messageIcon from "../../assets/vendor/unread-msg.png";
+import listingIcon from "../../assets/vendor/active-listing.png";
+import earningsIcon from "../../assets/vendor/earning-snapshots.png";
 import {
   reviews,
 } from "../../components/vendor/data/dashboardData";
@@ -301,22 +305,40 @@ const upcomingBookingsCount =
   ).length;
 
 
-  const summaryCards = [
+const summaryCards = [
   {
-    title: 'Pending Requests',
     value: pendingRequestsCount,
+    label: "New Booking Requests",
+    icon: bookingIcon,
+    className: css.bookingCard,
   },
+
   {
-    title: 'Approved Bookings',
-    value: approvedBookingsCount,
+    value: upcomingBookingsCount,
+    label: "Upcoming Bookings",
+    icon: upcomingIcon,
+    className: css.upcomingCard,
   },
+
   {
-    title: 'Monthly Revenue',
-    value: `$${monthlyRevenue}`,
-  },
-  {
-    title: 'Unread Messages',
     value: unreadMessagesCount,
+    label: "Unread Messages",
+    icon: messageIcon,
+    className: css.messageCard,
+  },
+
+  {
+    value: activeListingsCount,
+    label: "Active Listings",
+    icon: listingIcon,
+    className: css.listingCard,
+  },
+
+  {
+    value: `$${monthlyRevenue}`,
+    label: "Earnings Snapshot",
+    icon: earningsIcon,
+    className: css.earningsCard,
   },
 ];
 
@@ -514,13 +536,16 @@ const earningsData = months.map(month => ({
       </aside>
       */}
       {/* MAIN CONTENT */}
-
+    <div className={css.announcementBar}>
+      🔥 Browse Event Rentals From Trusted Local Vendors
+    </div>
       <main className={css.mainContent}>
 
         <VendorHeader
           activePage={activePage}
           setActivePage={setActivePage}
           unreadMessagesCount={unreadMessagesCount}
+          currentUser={currentUser}
         />
 
         {/* OVERVIEW PAGE */}

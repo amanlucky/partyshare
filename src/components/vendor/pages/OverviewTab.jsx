@@ -137,24 +137,24 @@ const OverviewTab = ({
                   {/* SUMMARY CARDS */}
       
                   <section className={css.summaryGrid}>
-                    {summaryCards.map(card => (
-                      <div key={card.title} className={css.summaryCard}>
-      
-                        <div className={css.cardTop}>
-                          <h3>{card.value}</h3>
-      
-                          <div className={css.cardIcon}>
-                            {card.title === 'Pending Requests' && '📥'}
-                            {card.title === 'Approved Bookings' && '✅'}
-                            {card.title === 'Monthly Revenue' && '💰'}
-                            {card.title === 'Unread Messages' && '💬'}
+                    {summaryCards.map((card, index) => (
+                        <div
+                          key={index}
+                          className={`${css.statCard} ${card.className}`}
+                         >
+                          <div className={css.cardHeader}>
+                            <h2>{card.value}</h2>
+
+                            <img
+                              src={card.icon}
+                              alt={card.label}
+                              className={css.statIcon}
+                            />
                           </div>
+
+                          <p>{card.label}</p>
                         </div>
-      
-                        <p>{card.title}</p>
-      
-                      </div>
-                    ))}
+                      ))}
                   </section>
       
                   {/* LATEST BOOKINGS */}
