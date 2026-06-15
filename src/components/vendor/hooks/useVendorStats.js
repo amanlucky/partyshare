@@ -55,22 +55,21 @@ const pendingPayouts = bookings
     return total + amount;
   }, 0);
 
-  const upcomingCount = bookings.filter(
+const upcomingCount = bookings.filter(
   booking =>
-    booking.attributes.state ===
-    'state/accepted'
+    booking.attributes.state === 'state/preauthorized' ||
+    booking.attributes.state === 'state/accepted'
 ).length;
 
 const completedCount = bookings.filter(
   booking =>
-    booking.attributes.state ===
-    'state/completed'
+    booking.attributes.state === 'state/reviewed'
 ).length;
 
 const cancelledCount = bookings.filter(
   booking =>
-    booking.attributes.state ===
-    'state/declined'
+    booking.attributes.state === 'state/declined' ||
+    booking.attributes.state === 'state/expired'
 ).length;
 
 const unreadMessagesCount =

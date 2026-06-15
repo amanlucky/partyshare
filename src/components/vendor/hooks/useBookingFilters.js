@@ -46,12 +46,12 @@ const useBookingFilters = (
       }
 
       if (bookingFilter === 'completed') {
-        return state === 'state/delivered';
+        return state === 'state/reviewed';
       }
 
       if (bookingFilter === 'cancelled') {
         return (
-          state === 'state/cancelled' ||
+          state === 'state/declined' ||
           state === 'state/expired'
         );
       }

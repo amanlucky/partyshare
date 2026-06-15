@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from "react";
 import css from "../../../containers/VendorDashboardPage/VendorDashboardPage.module.css";
-
+import searchIcon from "../../../assets/vendor/search-icon.png";
 import {
   ResponsiveContainer,
   AreaChart,
@@ -17,7 +17,91 @@ const OverviewTab = ({
   inventoryItems,
   conversations,
   earningsData,
+
+  fetchBookings,
+  sdk,
 }) => {
+  const [openMenu, setOpenMenu] = useState(null);
+  const [activeFilter, setActiveFilter] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
+  const menuRef = useRef(null);
+  useEffect(() => {
+  const handleClickOutside = event => {
+    if (
+      menuRef.current &&
+      !menuRef.current.contains(event.target)
+    ) {
+      setOpenMenu(null);
+    }
+  };
+
+  document.addEventListener(
+    "mousedown",
+    handleClickOutside
+  );
+
+  return () => {
+    document.removeEventListener(
+      "mousedown",
+      handleClickOutside
+    );
+  };
+}, []);
+
+const allBookings = bookings || [];
+
+const approvedBookings = allBookings.filter(
+  booking =>
+    booking.attributes.state === "state/accepted" ||
+    booking.attributes.state === "state/reviewed"
+);
+
+const rejectedBookings = allBookings.filter(booking =>
+  booking.attributes.state?.includes("declined")
+);
+
+const newBookings = allBookings.filter(
+  booking =>
+    booking.attributes.state === "state/preauthorized"
+);
+
+const allCount = allBookings.length;
+const approvedCount = approvedBookings.length;
+const rejectedCount = rejectedBookings.length;
+const newCount = newBookings.length;
+
+let filteredBookings = allBookings;
+
+if (activeFilter === "new") {
+  filteredBookings = newBookings;
+}
+
+if (activeFilter === "approved") {
+  filteredBookings = approvedBookings;
+}
+
+if (activeFilter === "rejected") {
+  filteredBookings = rejectedBookings;
+}
+
+if (searchTerm.trim()) {
+  filteredBookings = filteredBookings.filter(booking => {
+    const renter =
+      booking.customer?.attributes?.profile?.displayName || "";
+
+    const bookingId =
+      booking.id?.uuid || "";
+
+    return (
+      renter
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      bookingId
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
+    );
+  });
+}
   return (
     
     <>
@@ -161,51 +245,207 @@ const OverviewTab = ({
       
                   <section className={css.section}>
                     <div className={css.sectionHeader}>
-                      <h2>Latest Bookings</h2>
-                    </div>
+                        <h2>Latest Bookings</h2>
+
+                        <div className={css.bookingToolbar}>
+
+                            <div className={css.bookingFilters}>
+
+                              <button
+                                onClick={() => setActiveFilter("all")}
+                                className={
+                                  activeFilter === "all"
+                                    ? css.activeBookingFilter
+                                    : css.bookingFilter
+                                }
+                              >
+                                All <span>{allCount}</span>
+                              </button>
+
+                              <button
+                                onClick={() => setActiveFilter("new")}
+                                className={
+                                  activeFilter === "new"
+                                    ? css.activeBookingFilter
+                                    : css.bookingFilter
+                                }
+                              >
+                                New Requests <span>{newCount}</span>
+                              </button>
+
+                              <button
+                                onClick={() => setActiveFilter("approved")}
+                                className={
+                                  activeFilter === "approved"
+                                    ? css.activeBookingFilter
+                                    : css.bookingFilter
+                                }
+                              >
+                                Approved <span>{approvedCount}</span>
+                              </button>
+
+                              <button
+                                onClick={() => setActiveFilter("rejected")}
+                                className={
+                                  activeFilter === "rejected"
+                                    ? css.activeBookingFilter
+                                    : css.bookingFilter
+                                }
+                              >
+                                Rejected <span>{rejectedCount}</span>
+                              </button>
+
+                            </div>
+
+                            <div className={css.searchWrapper}>
+                              <img
+                                src={searchIcon}
+                                alt="Search"
+                                className={css.bookingSearchIcon}
+                              />
+
+                              <input
+                                type="text"
+                                placeholder="Search Bookings"
+                                className={css.searchInput}
+                                value={searchTerm}
+                                onChange={e => setSearchTerm(e.target.value)}
+                              />
+                            </div>
+
+                          </div>
+                      </div>
       
                     <div className={css.tableWrapper}>
                       <table className={css.table}>
                         <thead>
                           <tr>
-                            <th>Item</th>
                             <th>Renter</th>
+                            <th>Booking ID</th>
                             <th>Date</th>
-                            <th>Amount</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Items</th>
+                            <th>Actions</th>
                           </tr>
                         </thead>
       
                         <tbody>
-                          {bookings.slice(0, 5).map(booking => (
+                          {filteredBookings.slice(0, 5).map(booking => (
                             <tr key={booking.id.uuid}>
+
                               <td>
-                                {
-                                  booking.listing?.attributes?.title
-                                  || 'Listing'
-                                }
+                                <div className={css.renterCell}>
+                                  <div className={css.renterAvatar}>
+                                    {booking.customer?.attributes?.profile?.abbreviatedName?.toUpperCase()}
+                                  </div>
+
+                                  <span>
+                                    {booking.customer?.attributes?.profile?.displayName}
+                                  </span>
+                                </div>
                               </td>
+
+                              <td className={css.bookingId}>
+                                  {booking.id.uuid.slice(0, 8)}
+                                </td>
+
                               <td>
-                                {
-                                  booking.customer?.attributes
-                                    ?.profile?.displayName
-                                    || 'Customer'
-                                }
+                                {new Date(
+                                  booking.attributes.createdAt
+                                ).toLocaleDateString()}
                               </td>
+
                               <td>
-                                {
-                                  new Date(
-                                    booking.attributes.createdAt
-                                  ).toLocaleDateString()
-                                }
+                                {booking.attributes.payoutTotal
+                                  ? `$${booking.attributes.payoutTotal.amount / 100}`
+                                  : "$0"}
                               </td>
+
                               <td>
+                                  <span
+                                    className={`${css.statusBadge} ${
+                                      booking.attributes.state === "state/accepted" ||
+                                      booking.attributes.state === "state/reviewed"
+                                        ? css.approved
+                                        : booking.attributes.state === "state/declined"
+                                        ? css.rejected
+                                        : css.pending
+                                    }`}
+                                  >
                                   {
-                                    booking.attributes?.payinTotal
-                                      ? `$${booking.attributes.payinTotal.amount / 100}`
-                                      : '-'
-                                  }
+                                      booking.attributes.state === "state/preauthorized"
+                                        ? "Pending"
+                                        : booking.attributes.state === "state/accepted"
+                                        ? "Approved"
+                                        : booking.attributes.state === "state/declined"
+                                        ? "Rejected"
+                                        : booking.attributes.state === "state/reviewed"
+                                        ? "Completed"
+                                        : booking.attributes.state?.replace("state/", "")
+                                    }
+                                </span>
+                              </td>
+
+                              <td>
+                                {booking.attributes.lineItems?.length || 0} items
+                              </td>
+                              <td
+                                  className={css.actionsCell}
+                                  ref={openMenu === booking.id.uuid ? menuRef : null}
+                                >
+                                  {booking.attributes.state === "state/preauthorized" && (
+                                    <>
+                                      <button
+                                        className={css.actionBtn}
+                                        onClick={() =>
+                                          setOpenMenu(
+                                            openMenu === booking.id.uuid
+                                              ? null
+                                              : booking.id.uuid
+                                          )
+                                        }
+                                      >
+                                        ⋮
+                                      </button>
+
+                                      {openMenu === booking.id.uuid && (
+                                        <div
+                                          ref={menuRef}
+                                          className={css.actionMenu}
+                                        >
+                                          <button
+                                            className={css.menuItem}
+                                            onClick={async () => {
+                                              try {
+                                                await sdk.transactions.transition({
+                                                  id: booking.id,
+                                                  transition: "transition/accept",
+                                                  params: {},
+                                                });
+
+                                                await fetchBookings();
+                                                setOpenMenu(null);
+
+                                                alert("Booking accepted");
+                                              } catch (e) {
+                                                alert("Accept failed");
+                                              }
+                                            }}
+                                          >
+                                            ✓ Approve
+                                          </button>
+
+                                          <button className={css.menuItem}>
+                                            ✕ Reject
+                                          </button>
+                                        </div>
+                                      )}
+                                    </>
+                                  )}
                                 </td>
                             </tr>
+                            
                           ))}
                         </tbody>
                       </table>

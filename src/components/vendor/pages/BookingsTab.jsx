@@ -1,4 +1,8 @@
-import React from 'react';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+} from 'react';
 import css from '../../../containers/VendorDashboardPage/VendorDashboardPage.module.css';
 
 const BookingsTab = props => {
@@ -35,6 +39,34 @@ const BookingsTab = props => {
 
     messageText,
   } = props;
+
+
+  const [openMenu, setOpenMenu] = useState(null);
+  const [expandedBooking, setExpandedBooking] = useState(null);
+  const menuRef = useRef(null);
+
+useEffect(() => {
+  
+  const handleClickOutside = e => {
+    if (
+      menuRef.current &&
+      !menuRef.current.contains(e.target)
+    ) {
+      setOpenMenu(null);
+    }
+  };
+
+  document.addEventListener(
+    'mousedown',
+    handleClickOutside
+  );
+
+  return () =>
+    document.removeEventListener(
+      'mousedown',
+      handleClickOutside
+    );
+}, []);
 
   return (
     <>
@@ -143,12 +175,13 @@ const BookingsTab = props => {
 
                 <thead>
                   <tr>
-                    <th>Customer</th>
-                    <th>Item</th>
-                    <th>Dates</th>
-                    <th>Delivery</th>
+                    <th>Renter</th>
+                    <th>Booking ID</th>
+                    <th>Event Dates</th>
                     <th>Total</th>
-                    <th>Status</th>
+                    <th>Request Status</th>
+                    <th>Items</th>
+                    <th>Fulfillment Method</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -170,9 +203,19 @@ const BookingsTab = props => {
 
                   ) : (
 
-                    currentBookings.map(booking => (
+                 currentBookings.map(booking => {
 
-                      <tr key={booking.id.uuid}>
+                    console.log(
+                        currentBookings.map(b => ({
+                          id: b.id?.uuid?.slice(0, 8),
+                          state: b.attributes?.state,
+                          process: b.attributes?.processName,
+                        }))
+                      );
+
+                    return (
+                      <React.Fragment key={booking.id.uuid}>
+                        <tr>
 
                         <td>
                           {
@@ -183,10 +226,9 @@ const BookingsTab = props => {
                         </td>
 
                         <td>
-                          {
-                            booking.listing?.attributes
-                              ?.title || 'Listing'
-                          }
+                          {booking.id?.uuid
+                            ? booking.id.uuid.slice(0, 8)
+                            : '-'}
                         </td>
 
                         <td>
@@ -206,27 +248,19 @@ const BookingsTab = props => {
                         </td>
 
                         <td>
-                          {
-                            booking.attributes?.deliveryMethod
-                              || 'Pickup'
-                          }
+                          {booking.attributes?.payinTotal
+                            ? `$${(
+                                booking.attributes.payinTotal.amount / 100
+                              ).toFixed(2)}`
+                            : '$0.00'}
                         </td>
 
-                        <td>
-                          {
-                            booking.attributes?.payinTotal
-                              ? `$${booking.attributes.payinTotal.amount / 100}`
-                              : '-'
-                          }
-                        </td>
-
-                        <td>
-
-                          <span
-                            className={
-                              booking.attributes.state ===
-                              'state/preauthorized'
-                                ? css.statusPending
+                          <td>
+                            <span
+                              className={
+                                booking.attributes.state ===
+                                'state/preauthorized'
+                                  ? css.statusPending
 
                                 : booking.attributes.state ===
                                   'state/accepted'
@@ -235,192 +269,208 @@ const BookingsTab = props => {
                                 : booking.attributes.state ===
                                     'state/cancelled' ||
                                   booking.attributes.state ===
-                                    'state/expired'
+                                    'state/expired' ||
+                                  booking.attributes.state ===
+                                    'state/declined'
                                 ? css.statusCancelled
 
-                                : css.statusCompleted
-                            }
-                          >
+                                : booking.attributes.state ===
+                                    'state/reviewed'
+                                ? css.statusCompleted
 
-                            {booking.attributes.state ===
-                              'state/preauthorized' &&
-                              'Upcoming'}
+                                : css.statusPending
+                              }
+                            >
+                              {booking.attributes.state === 'state/preauthorized' &&
+                                'Upcoming'}
 
-                            {booking.attributes.state ===
-                              'state/accepted' &&
-                              'Accepted'}
+                              {booking.attributes.state === 'state/accepted' &&
+                                'Accepted'}
 
-                            {booking.attributes.state ===
-                              'state/delivered' &&
-                              'Completed'}
+                              {booking.attributes.state === 'state/delivered' &&
+                                'Completed'}
 
-                            {booking.attributes.state ===
-                              'state/cancelled' &&
-                              'Cancelled'}
+                              {booking.attributes.state === 'state/cancelled' &&
+                                'Cancelled'}
 
-                            {booking.attributes.state ===
-                              'state/expired' &&
-                              'Expired'}
+                              {booking.attributes.state === 'state/expired' &&
+                                'Expired'}
 
-                            {booking.attributes.state ===
-                              'state/pending-payment' &&
-                              'Pending Payment'}
+                              {booking.attributes.state === 'state/pending-payment' &&
+                                'Pending Payment'}
+                                {booking.attributes.state ===
+                                'state/declined' &&
+                                'Declined'}
 
-                          </span>
+                              {booking.attributes.state ===
+                                'state/reviewed' &&
+                                'Reviewed'}
+                            </span>
+                          </td>
 
-                        </td>
+                          <td>
+                            {booking.lineItems?.length || 1}
+                          </td>
 
-                        <td>
+                          <td>
+                            Pickup
+                          </td>
 
-                          <div className={css.actionButtons}>
+                          <td className={css.actionsCell}>
+                            <button
+                              className={css.menuButton}
+                              onClick={() =>
+                                setExpandedBooking(
+                                  expandedBooking === booking.id.uuid
+                                    ? null
+                                    : booking.id.uuid
+                                )
+                              }
+                            >
+                              {expandedBooking === booking.id.uuid ? '−' : '+'}
+                            </button>
+                            <button
+                              className={css.menuButton}
+                              onClick={() =>
+                                setOpenMenu(
+                                  openMenu === booking.id.uuid
+                                    ? null
+                                    : booking.id.uuid
+                                )
+                              }
+                            >
+                              ⋮
+                            </button>
 
-                            {booking.attributes.lastTransition !==
-                              'transition/accept' && (
-
-                              <button
-                                className={css.approveBtn}
-                                onClick={async () => {
-
-                                  try {
-
-                                    await sdk.transactions.transition({
-                                      id: booking.id,
-                                      transition: 'transition/accept',
-                                      params: {},
-                                    });
-
-                                    await fetchBookings();
-
-                                    alert('Booking accepted');
-
-                                  } catch (e) {
-
-                                    console.log(e.data);
-
-                                  }
-
-                                }}
+                            {openMenu === booking.id.uuid && (
+                              <div
+                                ref={menuRef}
+                                className={css.actionMenu}
                               >
-                                Accept
-                              </button>
 
+                                <button className={css.menuItem}>
+                                  View
+                                </button>
+
+                                <button className={css.menuItem}>
+                                  Details
+                                </button>
+
+                                <button className={css.menuItem}>
+                                  Message
+                                </button>
+
+                                <button className={css.menuItem}>
+                                  Invoice
+                                </button>
+
+                              </div>
                             )}
 
-                            <button
-                              className={css.smallBtn}
-                              onClick={() => {
+                          </td>
 
-                                const slug =
-                                  booking.listing?.attributes?.title
-                                    ?.replace(/\s+/g, '-')
-                                    ?.toLowerCase();
+                        </tr>
+                            {expandedBooking === booking.id.uuid && (
+                              <tr>
+                                <td colSpan="7">
+                                  <div
+                                    style={{
+                                      padding: '20px',
+                                      background: '#f9fafb',
+                                      borderRadius: '8px',
+                                    }}
+                                  >
+                                    <div
+                                      style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'space-between',
+                                        marginBottom: '15px',
+                                      }}
+                                    >
+                                      <div>
+                                        <strong>Booking ID:</strong> {booking.id.uuid}
+                                      </div>
 
-                                if (!slug || !booking.listing?.id?.uuid) {
-                                  return;
-                                }
+                                      <div>
+                                        <strong>Customer:</strong>{' '}
+                                        {booking.customer?.attributes?.profile?.displayName}
+                                      </div>
+                                    </div>
 
-                                window.open(
-                                  `/l/${slug}/${booking.listing.id.uuid}`,
-                                  '_blank'
-                                );
+                                    <table
+                                      style={{
+                                        width: '100%',
+                                        borderCollapse: 'collapse',
+                                      }}
+                                    >
+                                      <thead>
+                                        <tr>
+                                          <th width="40"></th>
+                                          <th align="left">Product Info</th>
+                                          <th align="left">Status</th>
+                                          <th align="left">Price</th>
+                                        </tr>
+                                      </thead>
 
-                              }}
-                            >
-                              View
-                            </button>
-                            <button
-                            className={css.smallBtn}
-                            onClick={() =>
-                              setSelectedBooking(booking)
-                            }
-                          >
-                            Details
-                          </button>
-                            <button
-                                className={css.smallBtn}
-                                onClick={async () => {
+                                      <tbody>
+                                        <tr>
+                                          <td>
+                                            <input type="checkbox" />
+                                          </td>
 
-                                  const conversationData = {
-                                    id: booking.id.uuid,
+                                          <td>
+                                            <strong>
+                                              {booking.listing?.attributes?.title}
+                                            </strong>
 
-                                    renter:
-                                      booking.customer?.attributes
-                                        ?.profile?.displayName,
+                                            <div
+                                              style={{
+                                                fontSize: '12px',
+                                                color: '#777',
+                                                marginTop: '4px',
+                                              }}
+                                            >
+                                              ID: {booking.id.uuid.slice(0, 8)}
+                                            </div>
+                                          </td>
 
-                                    item:
-                                      booking.listing?.attributes
-                                        ?.title,
+                                          <td>
+                                            {booking.attributes?.state}
+                                          </td>
 
-                                    transactionId: booking.id,
+                                          <td>
+                                            $
+                                            {(booking.attributes?.payinTotal?.amount || 0) /
+                                              100}
+                                          </td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
 
-                                    messages: [],
-                                  };
+                                    <div
+                                      style={{
+                                        marginTop: '20px',
+                                        display: 'flex',
+                                        gap: '10px',
+                                      }}
+                                    >
+                                      <button className={css.rejectBtn}>
+                                        Reject Selected
+                                      </button>
 
-                                  setActiveConversation(conversationData);
+                                      <button className={css.approveBtn}>
+                                        Approve Selected
+                                      </button>
+                                    </div>
+                                  </div>
+                                </td>
+                              </tr>
+                            )}
+                     </React.Fragment>
+  );
+})
 
-                                  setActivePage('Messages');
-
-                                  try {
-
-                                    const messagesResponse =
-                                      await sdk.messages.query({
-                                        transactionId: booking.id,
-                                      });
-
-                                    const realMessages =
-                                      messagesResponse.data.data.reverse().map(msg => ({
-
-                                       sender: 'renter',
-
-                                        text: msg.attributes.content,
-
-                                        time: new Date(
-                                          msg.attributes.createdAt
-                                        ).toLocaleTimeString([], {
-                                          hour: '2-digit',
-                                          minute: '2-digit',
-                                        }),
-
-                                      }));
-
-                                    setActiveConversation({
-                                      ...conversationData,
-                                      messages: realMessages,
-                                    });
-
-                                  } catch (e) {
-
-                                    console.log(e);
-
-                                  }
-
-                                }}
-                              >
-                                {/* Booking desktop message button  */}
-                                Message
-                              </button>
-
-                            <button
-                              className={css.smallBtn}
-                              onClick={() => {
-
-                                window.open(
-                                  `/sale/${booking.id.uuid}`,
-                                  '_blank'
-                                );
-
-                              }}
-                            >
-                              Invoice
-                            </button>
-
-                          </div>
-
-                        </td>
-
-                      </tr>
-
-                    ))
 
                   )}
 

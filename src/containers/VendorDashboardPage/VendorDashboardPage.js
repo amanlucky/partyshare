@@ -557,6 +557,9 @@ const earningsData = months.map(month => ({
             inventoryItems={inventoryItems}
             conversations={conversations}
             earningsData={earningsData}
+
+            fetchBookings={fetchBookings}
+            sdk={sdk}
           />
         )}
 
