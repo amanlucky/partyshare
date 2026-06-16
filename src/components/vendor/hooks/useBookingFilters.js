@@ -22,13 +22,19 @@ const useBookingFilters = (
         booking.listing?.attributes
           ?.title
           ?.toLowerCase() || '';
+       const searchValue =
+          bookingSearch.toLowerCase();
 
-      const searchValue =
-        bookingSearch.toLowerCase();
+        
+      
+         const bookingId =
+           booking.id?.uuid?.toLowerCase() || '';
 
-      const matchesSearch =
-        customerName.includes(searchValue) ||
-        listingTitle.includes(searchValue);
+          
+        const matchesSearch =
+          customerName.includes(searchValue) ||
+          listingTitle.includes(searchValue) ||
+          bookingId.includes(searchValue);
 
       if (!matchesSearch) {
         return false;

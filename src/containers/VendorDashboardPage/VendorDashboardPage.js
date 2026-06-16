@@ -134,17 +134,6 @@ const {
       const realMessages =
   messagesResponse.data.data.reverse().map(msg => {
 
-console.log(
-  'FULL MESSAGE JSON',
-  JSON.stringify(msg, null, 2)
-);
-
-
-console.log(
-  'RELATIONSHIPS',
-  JSON.stringify(msg.relationships, null, 2)
-);
-
     return {
 
      sender: 'renter',
@@ -200,16 +189,6 @@ console.log(
           ],
         });
 
-      console.log(
-        'TRANSACTIONS:',
-        transactionsResponse
-      );
-
-    console.log(
-      'TRANSACTIONS:',
-      transactionsResponse
-    );
-
     setLoadingBookings(false);
 
   };
@@ -222,10 +201,6 @@ useEffect(() => {
 window.bookings = bookings;
   if (bookings.length) {
 
-    console.log(
-      'BOOKINGS DATA:',
-      bookings
-    );
 
   }
 

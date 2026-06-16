@@ -294,8 +294,8 @@
   @media (--viewportMedium) {
   }
   @media (--viewportLarge) {
-    /* contentContainer's full width - (orderColumn + paddings + margin) */
-    max-width: calc(100% - 360px);
+    /* contentContainer's full width - (orderColumn + paddings + margin) 
+    max-width: calc(100% - 360px);*/
     flex-basis: calc(100% - 360px);
     flex-shrink: 0;
     flex-grow: 1;
