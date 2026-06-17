@@ -21,7 +21,9 @@ const BusinessProfileStep = ({
 
             <div className="welcomeSidebar">
               <ul>
-                <li><span>Welcome</span></li>
+                <li className="completed">
+                  <span>Welcome</span>
+                </li>
 
                 <li className="active">
                   <span>Business Profile</span>

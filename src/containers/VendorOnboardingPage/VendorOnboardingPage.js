@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import WelcomeStep from './WelcomeStep';
 import BusinessProfileStep from './BusinessProfileStep';
-import ServicesStep from './ServicesStep';
+import FulfillmentDeliveryStep from './FulfillmentDeliveryStep';
+
 import PricingStep from './PricingStep';
 import PayoutStep from './PayoutStep';
 import CompleteStep from './CompleteStep';
@@ -73,7 +74,9 @@ return (
         )}
 
       {currentStep === 3 && (
-        <ServicesStep
+        <FulfillmentDeliveryStep
+          formData={formData}
+          setFormData={setFormData}
           onNext={nextStep}
           onBack={prevStep}
         />

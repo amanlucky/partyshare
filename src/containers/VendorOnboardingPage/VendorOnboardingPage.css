@@ -821,3 +821,93 @@
 .businessProfileContent .section-card {
   width: 100%;
 }
+.welcomeSidebar li.completed::before {
+  content: "✓";
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 16px;
+  height: 16px;
+
+  background: #E8F4FD;
+  border: 2px solid #3398CD;
+  border-radius: 50%;
+
+  color: #3398CD;
+  font-size: 10px;
+  font-weight: 700;
+}
+.welcomeSidebar li.completed {
+  color: #3398CD;
+}
+/* Fulfillment & Delivery */
+
+.welcomeContent.fulfillmentContent .section-card {
+  width: 100%;
+}
+
+.welcomeContent.fulfillmentContent .section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: flex-start;
+}
+
+.toggleSwitch {
+  position: relative;
+  display: inline-block;
+  width: 34px;
+  height: 20px;
+}
+
+.toggleSwitch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggleSlider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background: #d1d5db;
+  border-radius: 20px;
+  transition: .3s;
+}
+
+.toggleSlider:before {
+  content: "";
+
+  position: absolute;
+  width: 14px;
+  height: 14px;
+
+  left: 17px;
+  top: 3px;
+
+  background: white;
+  border-radius: 50%;
+}
+.toggleSwitch input:checked + .toggleSlider {
+  background: #3398CD;
+}
+
+.toggleSwitch input:checked + .toggleSlider:before {
+  transform: translateX(-14px);
+}
+.zipTags{
+  display:flex;
+  gap:8px;
+  margin-top:10px;
+  flex-wrap:wrap;
+}
+
+.zipTags span{
+  background:#F3F4F6;
+  padding:4px 10px;
+  border-radius:20px;
+  font-size:12px;
+  color:#666;
+}
