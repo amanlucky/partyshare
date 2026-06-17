@@ -3,8 +3,9 @@ import { connect } from 'react-redux';
 import WelcomeStep from './WelcomeStep';
 import BusinessProfileStep from './BusinessProfileStep';
 import FulfillmentDeliveryStep from './FulfillmentDeliveryStep';
+import UniversalPoliciesStep from './UniversalPoliciesStep';
 
-import PricingStep from './PricingStep';
+
 import PayoutStep from './PayoutStep';
 import CompleteStep from './CompleteStep';
 import OnboardingHeader from '../../components/vendor/onboarding/OnboardingHeader';
@@ -27,6 +28,21 @@ const [formData, setFormData] = useState({
   state: '',
   city: '',
   postcode: '',
+
+  cancellationPolicy:
+    'Orders cancelled more than 72 hours before the event date receive a full refund.',
+
+  cleaningExpectations:
+    'All rental items must be returned in the same condition they were received.',
+
+  damageResponsibility:
+    'The renter is responsible for any damage to rental items.',
+
+  lateReturnPolicy:
+    'Items must be returned by the agreed return date and time.',
+
+  additionalPolicyNotes:
+    'Rental items remain the property of the vendor at all times.',
 });
 
   const nextStep = () => {
@@ -82,22 +98,30 @@ return (
         />
       )}
 
-      {currentStep === 4 && (
-        <PricingStep
-          onNext={nextStep}
-          onBack={prevStep}
-        />
-      )}
-
-      {currentStep === 5 && (
-          <PayoutStep
+        {currentStep === 4 && (
+          <UniversalPoliciesStep
+            formData={formData}
+            setFormData={setFormData}
             onNext={nextStep}
             onBack={prevStep}
           />
         )}
 
+      {currentStep === 5 && (
+        <IdentityPayoutVerificationStep
+          formData={formData}
+          setFormData={setFormData}
+          onNext={nextStep}
+          onBack={prevStep}
+        />
+      )}
+
       {currentStep === 6 && (
-          <CompleteStep />
+          <CompletionStep
+            formData={formData}
+            setFormData={setFormData}
+            onBack={prevStep}
+          />
         )}
     </>
   );

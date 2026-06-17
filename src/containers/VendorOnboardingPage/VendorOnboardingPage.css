@@ -911,3 +911,111 @@
   font-size:12px;
   color:#666;
 }
+
+/* UNIVERSAL POLICIES */
+
+.universalPoliciesContent {
+  width: 100%;
+  max-width: 1100px;
+  align-items: stretch !important;
+}
+
+.universalPoliciesContent .section-card {
+  width: 100%;
+}
+
+.policyRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  padding: 18px 24px;
+
+  border-top: 1px solid #f1f1f1;
+}
+
+.policyTitle {
+  width: 220px;
+
+  font-family: Inter;
+  font-size: 14px;
+  font-weight: 500;
+
+  color: #111827;
+
+  padding-top: 14px;
+}
+
+.policyContent {
+  flex: 1;
+  max-width: 420px;
+}
+
+.policyContent textarea {
+  width: 100%;
+  min-height: 110px;
+
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+
+  padding: 12px;
+
+  resize: none;
+
+  font-size: 13px;
+  line-height: 18px;
+  color: #4b5563;
+}
+
+.policyActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.policyEditBtn {
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.policyEditBtn:hover {
+  background: #f9fafb;
+}
+.policyTextarea {
+  width: 100%;
+  min-height: 120px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 12px;
+  resize: vertical;
+}
+
+
+.cancelBtn {
+  padding: 6px 12px;
+  border: 1px solid #d9d9d9;
+  background: white;
+  cursor: pointer;
+}
+
+.saveBtn {
+  padding: 6px 12px;
+  border: none;
+  background: #3399d8;
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.policyText {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 12px;
+  min-height: 120px;
+  background: #fff;
+  white-space: pre-wrap;
+}
