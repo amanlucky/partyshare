@@ -5,10 +5,11 @@ import NotFoundPage from '../containers/NotFoundPage/NotFoundPage';
 import PreviewResolverPage from '../containers/PreviewResolverPage/PreviewResolverPage';
 import CategoryPage from "../containers/CategoryPage";
 import VendorDashboardPage from '../containers/VendorDashboardPage/VendorDashboardPage';
+import VendorOnboardingPage from '../containers/VendorOnboardingPage/VendorOnboardingPage';
 // routeConfiguration needs to initialize containers first
 // Otherwise, components will import form container eventually and
 // at that point css bundling / imports will happen in wrong order.
-import { NamedRedirect } from '../components';
+import { NamedRedirect } from '../components'; 
 
 const pageDataLoadingAPI = getPageDataLoadingAPI();
 
@@ -87,6 +88,11 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
       component: LandingPage,
       loadData: pageDataLoadingAPI.LandingPage.loadData,
       exact: true, // still add (safe)
+    },
+    {
+      path: '/vendor-onboarding',
+      name: 'VendorOnboardingPage',
+      component: VendorOnboardingPage,
     },
     {
       path: '/p/:pageId',
