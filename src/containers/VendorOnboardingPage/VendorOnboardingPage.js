@@ -4,10 +4,8 @@ import WelcomeStep from './WelcomeStep';
 import BusinessProfileStep from './BusinessProfileStep';
 import FulfillmentDeliveryStep from './FulfillmentDeliveryStep';
 import UniversalPoliciesStep from './UniversalPoliciesStep';
-
-
-import PayoutStep from './PayoutStep';
-import CompleteStep from './CompleteStep';
+import IdentityVerificationStep from './IdentityVerificationStep';
+import CompletionStep from './CompletionStep';
 import OnboardingHeader from '../../components/vendor/onboarding/OnboardingHeader';
 
 const VendorOnboardingPage = props => {
@@ -108,21 +106,14 @@ return (
         )}
 
       {currentStep === 5 && (
-        <IdentityPayoutVerificationStep
-          formData={formData}
-          setFormData={setFormData}
-          onNext={nextStep}
-          onBack={prevStep}
-        />
-      )}
+  <IdentityVerificationStep
+    onNext={nextStep}
+  />
+)}
 
-      {currentStep === 6 && (
-          <CompletionStep
-            formData={formData}
-            setFormData={setFormData}
-            onBack={prevStep}
-          />
-        )}
+{currentStep === 6 && (
+  <CompletionStep />
+)}
     </>
   );
 };

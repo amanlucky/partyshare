@@ -1019,3 +1019,202 @@
   background: #fff;
   white-space: pre-wrap;
 }
+/* identity */
+
+
+.verificationContent {
+  position: relative;
+}
+
+.skipLink {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  cursor: pointer;
+  font-size: 14px;
+  text-decoration: underline;
+}
+.stripeBtn {
+  background: #635bff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 28px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.stripeBtn:hover {
+  opacity: 0.9;
+}
+.verificationItems {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 20px 0;
+}
+.verificationCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto;
+  padding-top: 60px;
+}
+.verificationContent {
+  position: relative;
+}
+
+.stripeLogo {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  width: 80px;
+  height: auto;
+}
+.verificationItems {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin: 24px 0;
+  flex-wrap: wrap;
+}
+
+.verificationItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 16px;
+  color: #1F2937;
+}
+
+.verificationItem img {
+  width: 18px;
+  height: 18px;
+}
+
+/* ==========================
+   COMPLETION SCREEN
+========================== */
+
+.completionScreen {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.completionCard {
+  width: 100%;
+  max-width: 700px;
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.completionImage {
+  width: 260px;
+  height: auto;
+  margin-bottom: 30px;
+}
+
+.completionTitle {
+  font-size: 42px;
+  font-weight: 700;
+  color: #17233D;
+  margin-bottom: 20px;
+  line-height: 1.2;
+}
+
+.completionDescription {
+  max-width: 600px;
+  margin: 0 auto 32px;
+  font-size: 18px;
+  line-height: 30px;
+  color: #5E6A85;
+}
+
+.completionButtons {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.completionCreateBtn {
+  background: #F59E0B;
+  border: none;
+  color: white;
+  padding: 14px 28px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.completionDashboardBtn {
+  background: white;
+  border: 1px solid #D1D5DB;
+  color: #17233D;
+  padding: 14px 28px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.completionCreateBtn:hover,
+.completionDashboardBtn:hover {
+  opacity: 0.9;
+}
+.completionCard {
+  max-width: 700px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.completionImage {
+  width: 280px;
+  height: auto;
+  margin-bottom: 30px;
+}
+
+.completionTitle {
+  font-size: 28px;
+  font-weight: 700;
+  color: #17233D;
+  margin-bottom: 20px;
+}
+
+.completionDescription {
+  max-width: 600px;
+  margin: 0 auto 30px;
+  font-size: 16px;
+  color: #667085;
+  line-height: 28px;
+}
+
+.completionButtons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.completionCreateBtn {
+  background: #F59E0B;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 12px 22px;
+  cursor: pointer;
+}
+
+.completionDashboardBtn {
+  background: white;
+  border: 1px solid #D0D5DD;
+  border-radius: 6px;
+  padding: 12px 22px;
+  cursor: pointer;
+}
