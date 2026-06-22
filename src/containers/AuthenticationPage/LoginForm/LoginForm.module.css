@@ -1,32 +1,55 @@
-@import '../../../styles/customMediaQueries.css';
-
 .root {
-  composes: marketplaceModalFormRootStyles from global;
+  width: 100%;
+}
 
-  justify-content: flex-start;
+.root label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1f2937;
+}
 
-  @media (--viewportMedium) {
-    justify-content: space-between;
-  }
+.root input {
+  height: 52px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #ffffff;
 }
 
 .password {
-  composes: marketplaceModalPasswordMargins from global;
+  margin-top: 18px;
 }
 
 .bottomWrapper {
-  composes: marketplaceModalBottomWrapper from global;
+  margin-top: 20px;
 }
 
-/* Adjust the bottomWrapper's margin to match modals without the helper text */
-.bottomWrapperText {
-  composes: marketplaceModalBottomWrapperText from global;
+.bottomWrapper button {
+  width: 100%;
+  height: 52px;
+  border-radius: 8px;
+  background: #ff8a00;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.bottomWrapper button:hover {
+  background: #f57c00;
 }
 
 .recoveryLink {
-  composes: marketplaceModalHelperLink from global;
+  color: #2f80ed;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.recoveryLink:hover {
+  text-decoration: underline;
 }
 
 .recoveryLinkInfo {
-  composes: marketplaceModalHelperText from global;
+  display: block;
+  margin-bottom: 14px;
+  font-size: 14px;
+  color: #6b7280;
 }

@@ -8,24 +8,53 @@
 }
 
 .contentContainer {
-  composes: marketplaceModalRootStyles from global;
-  min-height: calc(100vh - 60px);
-  height: auto;
-
-  @media (--viewportMedium) {
-    height: unset;
-    min-height: unset;
-  }
+  max-width: 1180px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+.authWrapper {
+  display: flex;
+  background: #f4f8fb;
+  border-radius: 12px;
+  overflow: hidden;
+  align-items: center;
+   box-shadow: 0 4px 20px rgba(0,0,0,.08);
+}
+.authLeft {
+  width: 45%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 50px;
 }
 
+.authRight {
+  width: 55%;
+}
+
+.authRight img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.authCard {
+  width: 100%;
+  max-width: 520px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
 .content {
-  composes: marketplaceModalBaseStyles from global;
-  padding-top: 29px;
+  width: 100%;
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
 
   @media (--viewportMedium) {
     margin-top: 5vh;
     margin-bottom: 7.5vh;
-    min-height: 700px;
   }
 }
 
@@ -82,14 +111,7 @@
 
 .loginForm {
   margin-top: 24px;
-
-  /* We don't want the form to take the whole space so that on mobile view
-  the social login buttons will be after the sign up button
-  and not in the bottom of the page.
-  We also need to add flex-basis value so that Safari will show the
-  whole form correctly.  */
-  flex-grow: 0;
-  flex-basis: 260px;
+  width: 100%;
 
   @media (--viewportMedium) {
     flex-basis: 330px;
@@ -100,15 +122,7 @@
 
 .signupForm {
   margin-top: 24px;
-
-  /* We don't want the form to take the whole space so that on mobile view
-  the social login buttons will be after the sign up button
-  and not in the bottom of the page.
-  We also need to add flex-basis value so that Safari will show the
-  whole form correctly.  */
-  flex-grow: 0;
-  flex-basis: 340px;
-
+  width: 100%;
   @media (--viewportMedium) {
     flex-basis: 410px;
     margin-top: 30px;
@@ -302,4 +316,30 @@
   padding: 0 20px 0 20px;
   position: relative;
   margin: 0;
+}
+
+/* Custom Authentication Layout */
+
+.contentContainer {
+  position: relative;
+}
+
+@media (max-width: 1024px) {
+  .content::after {
+    display: none;
+  }
+}
+@media (max-width: 992px) {
+  .authWrapper {
+    flex-direction: column;
+  }
+
+  .authLeft,
+  .authRight {
+    width: 100%;
+  }
+
+  .authRight {
+    height: 300px;
+  }
 }

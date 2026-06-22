@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 import { withRouter, Redirect } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import classNames from 'classnames';
+import Header from '../../components/Header';
+import Footer from '../../components/Footer';
 
 import { useConfiguration } from '../../context/configurationContext';
 import { useRouteConfiguration } from '../../context/routeConfigurationContext';
@@ -25,7 +27,8 @@ import { isScrollingDisabled, manageDisableScrolling } from '../../ducks/ui.duck
 import { sendVerificationEmail } from '../../ducks/user.duck';
 import { fetchFeaturedListings } from '../../ducks/featuredListings.duck';
 import { getListingsById } from '../../ducks/marketplaceData.duck';
-
+import signinBanner from '../../assets/auth/signinbanner.png';
+import signupBanner from '../../assets/auth/signupbanner.png';
 import {
   Page,
   Heading,
@@ -33,13 +36,9 @@ import {
   NamedRedirect,
   LinkTabNavHorizontal,
   SocialLoginButton,
-  ResponsiveBackgroundImageContainer,
   Modal,
   LayoutSingleColumn,
 } from '../../components';
-
-import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
-import FooterContainer from '../../containers/FooterContainer/FooterContainer';
 
 import TermsAndConditions from './TermsAndConditions/TermsAndConditions';
 import ConfirmSignupForm from './ConfirmSignupForm/ConfirmSignupForm';
@@ -472,8 +471,8 @@ const BlankPage = props => {
       }}
     >
       <LayoutSingleColumn
-        topbar={<TopbarContainer className={topbarClasses} />}
-        footer={<FooterContainer />}
+        topbar={<Header />}
+        footer={<Footer />}
       >
         <div className={css.spinnerContainer}>
           <IconSpinner />
@@ -585,6 +584,7 @@ export const AuthenticationPageComponent = props => {
   // (i.e. `from` is present). We must also check the `emailVerified`
   // flag only when the current user is fully loaded.
   const showEmailVerification = !isLogin && currentUserLoaded && !user.attributes.emailVerified;
+  const bannerImage = isLogin ? signinBanner : signupBanner;
 
   const marketplaceName = config.marketplaceName;
   const schemaTitle = isLogin
@@ -647,52 +647,55 @@ export const AuthenticationPageComponent = props => {
       }}
     >
       <LayoutSingleColumn
-        mainColumnClassName={css.layoutWrapperMain}
-        topbar={<TopbarContainer className={topbarClasses} />}
-        footer={<FooterContainer />}
-      >
-        <ResponsiveBackgroundImageContainer
-          className={css.root}
-          childrenWrapperClassName={css.contentContainer}
-          as="section"
-          image={config.branding.brandImage}
-          sizes="100%"
-          useOverlay
+          mainColumnClassName={css.layoutWrapperMain}
+          topbar={<Header />}
+          footer={<Footer />}
         >
-          {showEmailVerification ? (
-            <EmailVerificationInfo
-              name={user.attributes.profile.firstName}
-              email={<span className={css.email}>{user.attributes.email}</span>}
-              onResendVerificationEmail={onResendVerificationEmail}
-              resendErrorMessage={resendErrorMessage}
-              sendVerificationEmailInProgress={sendVerificationEmailInProgress}
-            />
-          ) : (
-            <AuthenticationOrConfirmInfoForm
-              tab={tab}
-              userType={userType}
-              authInfo={authInfo}
-              from={from}
-              showFacebookLogin={!!process.env.REACT_APP_FACEBOOK_APP_ID}
-              showGoogleLogin={!!process.env.REACT_APP_GOOGLE_CLIENT_ID}
-              submitLogin={submitLogin}
-              submitSignup={submitSignup}
-              submitSingupWithIdp={submitSingupWithIdp}
-              authInProgress={authInProgress}
-              loginError={loginError}
-              idpAuthError={authError}
-              signupError={signupError}
-              confirmError={confirmError}
-              termsAndConditions={
-                <TermsAndConditions
-                  onOpenTermsOfService={() => setTosModalOpen(true)}
-                  onOpenPrivacyPolicy={() => setPrivacyModalOpen(true)}
-                  intl={intl}
-                />
-              }
-            />
-          )}
-        </ResponsiveBackgroundImageContainer>
+       <section className={css.contentContainer}>
+         <div className={css.authWrapper}>
+            <div className={css.authLeft}>
+              <div className={css.authCard}>
+                {showEmailVerification ? (
+                  <EmailVerificationInfo
+                    name={user.attributes.profile.firstName}
+                    email={<span className={css.email}>{user.attributes.email}</span>}
+                    onResendVerificationEmail={onResendVerificationEmail}
+                    resendErrorMessage={resendErrorMessage}
+                    sendVerificationEmailInProgress={sendVerificationEmailInProgress}
+                  />
+                ) : (
+                  <AuthenticationOrConfirmInfoForm
+                    tab={tab}
+                    userType={userType}
+                    authInfo={authInfo}
+                    from={from}
+                    showFacebookLogin={!!process.env.REACT_APP_FACEBOOK_APP_ID}
+                    showGoogleLogin={!!process.env.REACT_APP_GOOGLE_CLIENT_ID}
+                    submitLogin={submitLogin}
+                    submitSignup={submitSignup}
+                    submitSingupWithIdp={submitSingupWithIdp}
+                    authInProgress={authInProgress}
+                    loginError={loginError}
+                    idpAuthError={authError}
+                    signupError={signupError}
+                    confirmError={confirmError}
+                    termsAndConditions={
+                      <TermsAndConditions
+                        onOpenTermsOfService={() => setTosModalOpen(true)}
+                        onOpenPrivacyPolicy={() => setPrivacyModalOpen(true)}
+                        intl={intl}
+                      />
+                    }
+                  />
+                )}
+              </div>
+            </div>
+
+            <div className={css.authRight}>
+              <img src={bannerImage} alt="PartyShare" />
+            </div>
+          </div>
+       </section>
       </LayoutSingleColumn>
       <Modal
         id="AuthenticationPage.tos"
